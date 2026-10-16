@@ -23,12 +23,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - InventoryItems
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: dc29169b9312db64aab91f978badd79f
-    m_Address: Assets/Scripts/items/ScriptableObjects/RustyShortSword.asset
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - InventoryItems
-    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 8a706c1ac0fc83449b7009a6a05d8022, type: 2}
   m_SchemaSet:
