@@ -1,0 +1,16 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="OurAbsenceUI.uss" />
+    <ui:VisualElement name="LoadingRoot" class="oa-root oa-loading" picking-mode="Position">
+        <ui:VisualElement class="oa-backdrop" picking-mode="Ignore" />
+        <ui:VisualElement class="oa-shade" picking-mode="Ignore" />
+        <ui:VisualElement name="Ember" class="oa-ember" picking-mode="Ignore" />
+        <ui:Label name="LoreLine" class="oa-loading__lore" text="The path cannot be turned back; the only way is through the darkness." picking-mode="Ignore" />
+        <ui:VisualElement class="oa-loading__bottom" picking-mode="Ignore">
+            <ui:Label name="AreaName" class="oa-loading__area" text="The Descent" picking-mode="Ignore" />
+            <ui:VisualElement class="oa-bar" picking-mode="Ignore">
+                <ui:VisualElement name="BarFill" class="oa-bar__fill" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:Label name="Hint" class="oa-loading__hint" text="Loading" picking-mode="Ignore" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
