@@ -58,8 +58,8 @@ public static class PersonalityPresetGenerator
         chaseSpeed = 6.5f,
         footworkSpeed = 2.0f,
         // Ranges
-        meleeAttackRange = 2.2f,
-        optimalCombatRange = 3.5f,
+        meleeAttackRange = 1.3f,
+        optimalCombatRange = 2.1f,
         stopChasingRange = 14f,
     };
 
@@ -84,9 +84,9 @@ public static class PersonalityPresetGenerator
         combatSpeed = 3.0f,
         chaseSpeed = 4.5f,
         footworkSpeed = 1.6f,
-        meleeAttackRange = 2.0f,
-        optimalCombatRange = 5.0f,
-        maxRetreatDistance = 7f,
+        meleeAttackRange = 1.2f,
+        optimalCombatRange = 2.9f,
+        maxRetreatDistance = 4.1f,
         rollChance = 0.5f,
     };
 
@@ -157,7 +157,7 @@ public static class PersonalityPresetGenerator
         maxCombatTime = 2.5f,
         combatSpeed = 4.0f,
         chaseSpeed = 6.0f,
-        orbitRadius = 5f,
+        orbitRadius = 2.9f,
         orbitSpeed = 2.5f,
         rollChance = 0.6f,
     };
@@ -182,7 +182,7 @@ public static class PersonalityPresetGenerator
         maxCombatTime = 6.0f,
         combatSpeed = 2.5f,
         chaseSpeed = 4.0f,
-        maxRetreatDistance = 10f,
+        maxRetreatDistance = 5.9f,
         rollChance = 0.7f,
         stopChasingRange = 6f,
     };

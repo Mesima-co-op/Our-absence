@@ -31,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 73.223, y: 21.402, z: 63.209}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_LocalScale: {x: 0.8823529, y: 0.8823529, z: 0.8823529}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 367598175405201665}
@@ -86,6 +86,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   WeaponItem: {fileID: 4735868700385889007}
+  baseDamage: 20
 --- !u!65 &3730527735514232976
 BoxCollider:
   m_ObjectHideFlags: 0

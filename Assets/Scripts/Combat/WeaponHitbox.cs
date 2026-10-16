@@ -45,5 +45,9 @@ public class WeaponHitbox : MonoBehaviour
         health.TakeDamage(damage);
         _hasHitThisSwing = true;    // one hit per swing, then close
         Disable();
+
+        Vector3 point = other.ClosestPoint(transform.position);
+        Vector3 direction = other.transform.position - transform.root.position;
+        CombatFeedback.Hit(point, direction, victimIsPlayer: true);
     }
 }

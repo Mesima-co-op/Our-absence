@@ -297,6 +297,7 @@ public static class PlayerCharacterBuilder
             var body = root.GetComponentsInChildren<SkinnedMeshRenderer>(true)
                 .OrderByDescending(r => r.sharedMesh != null ? r.sharedMesh.vertexCount : 0).First();
             body.updateWhenOffscreen = true; // its bounds are shared with the clothing
+            GetOrAdd<MovementFX>(root); // footstep, roll and landing dust
             var outfit = GetOrAdd<CharacterOutfit>(root);
             outfit.body = body;
             outfit.hair.Clear();

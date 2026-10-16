@@ -205,6 +205,7 @@ public class HealthSystem : MonoBehaviour
         }
 
         target.tag = "Die";
+        CombatFeedback.Death(target.transform.position);
         OnDeath?.Invoke();
 
         bool isPlayer = Player_controller != null || GetComponent<Player_controller>() != null;

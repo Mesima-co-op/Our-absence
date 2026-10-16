@@ -33,13 +33,22 @@ public class WeaponDamageSystem : MonoBehaviour
         wielder = GetComponentInParent<AnimationManager>();
         attackAnimations = wielder != null ? new AttackAnimationController(wielder) : null;
         hitThisSwing.Clear();
+
+        // Held weapons leave a swoosh while swinging
+        if (wielder != null && trail == null)
+            trail = gameObject.AddComponent<WeaponTrail>();
+        if (trail != null) trail.enabled = wielder != null;
     }
+
+    private WeaponTrail trail;
 
     private void Update()
     {
+        bool attacking = attackAnimations != null && attackAnimations.IsAttacking();
         // A new swing starts once the previous attack has ended
-        if (attackAnimations != null && !attackAnimations.IsAttacking())
+        if (attackAnimations != null && !attacking)
             hitThisSwing.Clear();
+        if (trail != null) trail.Emitting = attacking;
     }
 
     private float Damage => baseDamage * (WeaponItem != null ? WeaponItem.damageModifier : 1f);
@@ -56,5 +65,10 @@ public class WeaponDamageSystem : MonoBehaviour
         if (!hitThisSwing.Add(enemyHealth)) return;
 
         enemyHealth.TakeDamage(Mathf.RoundToInt(Damage));
+
+        Vector3 blade = TryGetComponent<Collider>(out var own) ? own.bounds.center : transform.position;
+        Vector3 point = other.ClosestPoint(blade);
+        Vector3 direction = enemyHealth.transform.position - wielder.transform.position;
+        CombatFeedback.Hit(point, direction, victimIsPlayer: false);
     }
 }

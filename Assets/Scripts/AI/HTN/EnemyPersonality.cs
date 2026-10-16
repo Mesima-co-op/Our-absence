@@ -77,11 +77,11 @@ public class EnemyPersonality : ScriptableObject
     // ─────────────────────────────────────────────
 
     [Header("Combat Ranges")]
-    public float meleeAttackRange   = 2f;
-    public float optimalCombatRange = 4f;
+    public float meleeAttackRange   = 1.2f;
+    public float optimalCombatRange = 2.4f;
     public float stopChasingRange   = 10f;
-    public float distanceBuffer     = 0.5f;
-    public float maxRetreatDistance = 5f;
+    public float distanceBuffer     = 0.3f;
+    public float maxRetreatDistance = 2.9f;
 
     // ─────────────────────────────────────────────
     //  Detection
@@ -96,7 +96,7 @@ public class EnemyPersonality : ScriptableObject
     // ─────────────────────────────────────────────
 
     [Header("Orbit / Strafe")]
-    public float orbitRadius  = 7f;
+    public float orbitRadius  = 4.1f;
     public float orbitSpeed   = 1.5f;
     public float strafeJitter = 0.3f;
 

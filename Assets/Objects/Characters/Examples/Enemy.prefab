@@ -51248,6 +51248,7 @@ GameObject:
   - component: {fileID: 5555971878413194902}
   - component: {fileID: 3424560523856137423}
   - component: {fileID: 6768865144491458392}
+  - component: {fileID: 1539531803623992868}
   m_Layer: 11
   m_Name: Enemy
   m_TagString: Enemy
@@ -51265,7 +51266,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -12.32, y: 7.162789, z: 75.897}
-  m_LocalScale: {x: 1.7, y: 1.7, z: 1.7}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 9181347780734190809}
@@ -51411,9 +51412,28 @@ MonoBehaviour:
   Player_controller: {fileID: 0}
   UIDoc: {fileID: 0}
   uiSlider: {fileID: 3631117227685330088}
-  gameObject: {fileID: 7539980551190463051}
+  deathTarget: {fileID: 7539980551190463051}
   health: 100
   maxHealth: 100
+  playerRespawnDelay: 4
+--- !u!114 &1539531803623992868
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7539980551190463051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b22302a2b6da7f4bbe548a931bdfa48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minStepSpeed: 1.2
+  fullStepSpeed: 4.5
+  stepLift: 0.07
+  minAirTime: 0.3
+  hardLandingSpeed: 9
+  shakeOnLanding: 1
 --- !u!1 &7540808236629587969
 GameObject:
   m_ObjectHideFlags: 0

@@ -33,14 +33,14 @@ MonoBehaviour:
   combatSpeed: 2.5
   chaseSpeed: 4
   footworkSpeed: 1.8
-  meleeAttackRange: 2
-  optimalCombatRange: 4
+  meleeAttackRange: 1.2
+  optimalCombatRange: 2.4
   stopChasingRange: 6
-  distanceBuffer: 0.5
-  maxRetreatDistance: 10
+  distanceBuffer: 0.3
+  maxRetreatDistance: 5.9
   detectionRadius: 10
   detectionAngle: 45
-  orbitRadius: 7
+  orbitRadius: 4.1
   orbitSpeed: 1.5
   strafeJitter: 0.3
   rollCooldown: 3
