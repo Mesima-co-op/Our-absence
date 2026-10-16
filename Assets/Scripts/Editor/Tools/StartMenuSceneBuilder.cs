@@ -12,8 +12,8 @@ using UnityEngine.UIElements;
 /// </summary>
 public static class StartMenuSceneBuilder
 {
-    const string ScenePath = "Assets/Scenes/StartMenu.unity";
-    const string BasePanelSettings = "Assets/UI Toolkit/PanelSettings.asset";
+    const string ScenePath = "Assets/Scenes/Menus/StartMenu.unity";
+    const string BasePanelSettings = "Assets/UI/Toolkit/PanelSettings.asset";
     const string OverlayPanelSettings = "Assets/Resources/UI/OverlayPanelSettings.asset";
     const string StartMenuTree = "Assets/Resources/UI/StartMenu.uxml";
 

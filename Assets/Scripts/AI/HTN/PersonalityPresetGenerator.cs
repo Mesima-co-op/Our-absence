@@ -4,12 +4,12 @@ using UnityEngine;
 
 /// <summary>
 /// Editor utility that creates a set of ready-to-use EnemyPersonality assets
-/// in Assets/HTN_EnemyAI/Personalities/.
+/// in Assets/Data/AI/Personalities/.
 /// Run via  Tools > HTN Enemy AI > Create Personality Presets
 /// </summary>
 public static class PersonalityPresetGenerator
 {
-    private const string OutputPath = "Assets/HTN_EnemyAI/Personalities";
+    private const string OutputPath = "Assets/Data/AI/Personalities";
 
     [MenuItem("Tools/HTN Enemy AI/Create Personality Presets")]
     public static void CreateAll()
@@ -193,10 +193,12 @@ public static class PersonalityPresetGenerator
 
     static void EnsureFolder()
     {
-        if (!AssetDatabase.IsValidFolder("Assets/HTN_EnemyAI"))
-            AssetDatabase.CreateFolder("Assets", "HTN_EnemyAI");
+        if (!AssetDatabase.IsValidFolder("Assets/Data"))
+            AssetDatabase.CreateFolder("Assets", "Data");
+        if (!AssetDatabase.IsValidFolder("Assets/Data/AI"))
+            AssetDatabase.CreateFolder("Assets/Data", "AI");
         if (!AssetDatabase.IsValidFolder(OutputPath))
-            AssetDatabase.CreateFolder("Assets/HTN_EnemyAI", "Personalities");
+            AssetDatabase.CreateFolder("Assets/Data/AI", "Personalities");
     }
 
     static void CreateAsset(EnemyPersonality data, string assetName)

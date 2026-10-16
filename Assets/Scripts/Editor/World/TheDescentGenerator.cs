@@ -37,9 +37,10 @@ public static class TheDescentGenerator
 
     // ── Asset locations ───────────────────────────────────────────────────────
     const string Env = "Assets/Objects/environment/";
-    const string Big = Env + "BIG_Environment_Pack/Environment/";
+    const string BigPack = "Assets/ThirdParty/BIG_Environment_Pack/";
+    const string Big = BigPack + "Environment/";
     const string Veg = Big + "Vegetation/";
-    const string Layers = Env + "BIG_Environment_Pack/Terrain/_TerrainAutoUpgrade/";
+    const string Layers = BigPack + "Terrain/_TerrainAutoUpgrade/";
 
     // Path: control points (x, z) and ground height (m), north to south, always descending
     static readonly Vector3[] Control =

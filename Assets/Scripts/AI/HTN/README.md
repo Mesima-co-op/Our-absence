@@ -22,7 +22,7 @@ EnemyAI_HTN/
 
 1. **Copy all files** into your Unity project (any folder under `Assets/`).
 2. Run **Tools > HTN Enemy AI > Create Personality Presets** — this creates six ready-to-use
-   `.asset` files under `Assets/HTN_EnemyAI/Personalities/`.
+   `.asset` files under `Assets/Data/AI/Personalities/`.
 3. On your enemy GameObject, **replace** `EnemyAI` with `EnemyAI_HTN`.
 4. Assign the **`player`** Transform and drag in a **`EnemyPersonality`** asset.
 5. Optionally assign `patrolPoints`, `weapon`, `hend`, `agent`.
