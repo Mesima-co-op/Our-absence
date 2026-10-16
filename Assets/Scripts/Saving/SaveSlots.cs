@@ -13,6 +13,9 @@ public static class SaveSlots
 {
     public const int SlotCount = 3;
 
+    /// <summary>Hidden slot used by the Feature Test Lab; never listed in the start menu.</summary>
+    public const int TestSlot = 99;
+
     public static int CurrentSlot { get; private set; } = 0;
 
     static string Root => Path.Combine(Application.persistentDataPath, "saves");
@@ -56,7 +59,7 @@ public static class SaveSlots
     /// <summary>Makes <paramref name="slot"/> the slot every save and load goes to, and starts the play-time clock.</summary>
     public static void BeginSession(int slot)
     {
-        CurrentSlot = Mathf.Clamp(slot, 0, SlotCount - 1);
+        CurrentSlot = slot == TestSlot ? TestSlot : Mathf.Clamp(slot, 0, SlotCount - 1);
         sessionStarted = true;
         playTimeAtSessionStart = GetMeta(CurrentSlot)?.playTimeSeconds ?? 0;
         sessionStartRealtime = Time.realtimeSinceStartup;

@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/StartMenu.unity
+    path: Assets/Scenes/Menus/StartMenu.unity
     guid: f351b612e7651774e95014786675cb58
   - enabled: 1
     path: Assets/Scenes/Game.unity
@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/World/TheDescent.unity
     guid: 3c741f89aca24004582e50cee55fc621
+  - enabled: 1
+    path: Assets/Scenes/Testing/FeatureTestLab.unity
+    guid: 3d772f9dd38584842a2c9e72a88f254c
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 9522e5cbd37f77142ad1a5946904ce11, type: 2}
     com.unity.input.settings: {fileID: 11400000, guid: dfde93280b96d054a87936aa24a6bffe, type: 2}

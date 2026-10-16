@@ -88,13 +88,18 @@ public static class TheDescentPopulator
         // The generator's preview camera is replaced by the real camera rig ("Main Camera" removed above)
     }
 
-    static void CopyGameplayRoots(Scene target)
+    /// <summary>
+    /// Copies the playable setup (player, camera rig, HUD, menus, globals) from Game.unity into <paramref name="target"/>,
+    /// keeping the references between the copies. Also used by the feature test scene builder.
+    /// </summary>
+    internal static void CopyGameplayRoots(Scene target, params string[] extraRoots)
     {
+        var wanted = GameplayRoots.Concat(extraRoots).ToArray();
         var source = EditorSceneManager.OpenScene(SourceScenePath, OpenSceneMode.Additive);
         try
         {
-            var roots = source.GetRootGameObjects().Where(r => GameplayRoots.Contains(r.name)).ToArray();
-            var missing = GameplayRoots.Except(roots.Select(r => r.name)).ToArray();
+            var roots = source.GetRootGameObjects().Where(r => wanted.Contains(r.name)).ToArray();
+            var missing = wanted.Except(roots.Select(r => r.name)).ToArray();
             if (missing.Length > 0) Debug.LogWarning($"[The Descent] Not found in Game.unity: {string.Join(", ", missing)}");
 
             // Duplicate together (like Ctrl+D) so references between these objects are remapped to the copies
@@ -122,7 +127,7 @@ public static class TheDescentPopulator
                 surface.gameObject.SetActive(false);
     }
 
-    static void PlacePlayer(Scene scene, Transform spawn)
+    internal static void PlacePlayer(Scene scene, Transform spawn)
     {
         var roots = scene.GetRootGameObjects().ToDictionary(r => r.name, r => r);
         if (!roots.TryGetValue("Player", out var player)) return;
