@@ -92,27 +92,27 @@ public class EnemyLockOn : MonoBehaviour
     {
         targetsInRange = new GameObject[] { };
 
-        Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, noticeZone, targetLayers);
+        // Get all CharacterControllers in the scene on the target layers
+        CharacterController[] allCharControllers = FindObjectsByType<CharacterController>(FindObjectsSortMode.None);
 
-        foreach (Collider target in targetsInViewRadius)
+        foreach (CharacterController cc in allCharControllers)
         {
-            Vector3 dirToTarget = (target.transform.position - transform.position).normalized;
+            // Check if the object is on one of the target layers
+            if ((targetLayers.value & (1 << cc.gameObject.layer)) == 0) continue;
+
+            float distToTarget = Vector3.Distance(transform.position, cc.transform.position);
+
+            // Check within notice zone radius
+            if (distToTarget > noticeZone) continue;
+
+            Vector3 dirToTarget = (cc.transform.position - transform.position).normalized;
             float angleToTarget = Vector3.Angle(transform.forward, dirToTarget);
 
             if (angleToTarget < maxNoticeAngle / 2)
             {
-                float distToTarget = Vector3.Distance(transform.position, target.transform.position);
-                int mask = ~LayerMask.GetMask("Enviroment");
-                if (Physics.Raycast(transform.position, dirToTarget, out RaycastHit hit, distToTarget, mask))
+                if (cc.CompareTag("Enemy"))
                 {
-                    if (hit.collider.CompareTag("Enemy"))
-                    {
-                        // Target is visible → Add
-                        targetsInRange = targetsInRange.Append(target.gameObject).ToArray();
-
-                        // Draw clear line in green
-                        Debug.DrawLine(transform.position, target.transform.position, Color.green);
-                    }
+                    targetsInRange = targetsInRange.Append(cc.gameObject).ToArray();
                 }
             }
         }
@@ -122,8 +122,8 @@ public class EnemyLockOn : MonoBehaviour
     {
         enemyCanvas = enemyGameObject.GetComponentInChildren<Canvas>();
         crossHair = enemyGameObject.GetComponentInChildren<RawImage>();
-        enemyCanvas.enabled = true;
-        crossHair.color = crossHair_Color;
+        if (enemyCanvas != null) enemyCanvas.enabled = true;
+        if (crossHair != null) crossHair.color = crossHair_Color;
     }
 
     private void LockOnCamera()
@@ -151,7 +151,7 @@ public class EnemyLockOn : MonoBehaviour
         float scale = distanceToCamera * canvas_Scale;
 
         // Apply scale uniformly
-        enemyCanvas.transform.localScale = Vector3.one * scale;
+        if (enemyCanvas != null) enemyCanvas.transform.localScale = Vector3.one * scale;
 
         // Check if target is out of range or blocked
         float distanceToTarget = Vector3.Distance(transform.position, target.position);
