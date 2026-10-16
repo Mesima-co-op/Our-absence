@@ -93,38 +93,8 @@ public class MainMenuController : MonoBehaviour
         inventoryButton.clicked += OnInventoryButtonClicked;
         equipmentButton.clicked += OnEquipmentButtonClicked;
         settingsButton.clicked += OnSettingsButtonClicked;
-        AddSaveAndQuitButton(settingsButton);
 
         SetSelectedOption("");
-    }
-
-    /// <summary>Adds "Save & Quit" under Settings, styled like the other menu options.</summary>
-    private void AddSaveAndQuitButton(Button styleSource)
-    {
-        if (styleSource == null || styleSource.parent == null) return;
-
-        var saveQuit = new Button(OnSaveAndQuitClicked) { name = "SaveAndQuit", text = " Save & Quit" };
-        foreach (var cls in styleSource.GetClasses()) saveQuit.AddToClassList(cls);
-        saveQuit.style.unityTextAlign = TextAnchor.MiddleLeft;
-        saveQuit.style.unityFont = myFont != null ? myFont : Resources.Load<Font>("Fonts/WashingtonText");
-        saveQuit.style.unityFontDefinition = StyleKeyword.Initial;
-        saveQuit.style.color = new Color(0.7f, 0.7f, 0.7f, 1);
-        saveQuit.style.backgroundColor = new Color(0, 0, 0, 0);
-        saveQuit.style.height = Length.Percent(10);
-        saveQuit.style.borderLeftColor = saveQuit.style.borderRightColor =
-            saveQuit.style.borderTopColor = saveQuit.style.borderBottomColor = new Color(0, 0, 0, 0);
-        styleSource.parent.Insert(styleSource.parent.IndexOf(styleSource) + 1, saveQuit);
-    }
-
-    private void OnSaveAndQuitClicked()
-    {
-        GameSave.SaveGame();
-        if (globalVars != null)
-        {
-            globalVars.menuOpen = false;
-            globalVars.mainMenuUI.rootVisualElement.style.display = DisplayStyle.None;
-        }
-        SceneLoader.Load(SceneLoader.StartMenuScene);
     }
 
     private void SetInitialView()
