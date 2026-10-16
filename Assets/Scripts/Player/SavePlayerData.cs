@@ -24,7 +24,7 @@ public class SavePlayerData : MonoBehaviour
             data = SaveAndLoad.Load<PlayerSaveData.Data>(SaveAndLoad.savePathPlayerState);
             ItemsManager.Initialize(() =>
             {
-                var itemData = ItemsManager.ConvertDataDicToInventoryItemsArrayOptimized(data.items);
+                var itemData = ItemsManager.ConvertDataDicToInventoryItemsArrayOptimized(data?.items ?? new Dictionary<int, PlayerSaveData.ItemData>());
                 mainMenuController?.InitializeSavedItemsInInventory(itemData);
                 if (equipmentControl != null)
                 {
@@ -116,6 +116,7 @@ public class SavePlayerData : MonoBehaviour
 
                         // Initialize fields
                         instance._definition = def;
+                        instance.itemID = def.ItemID;
                         instance.quantity = kvp.Value.quantity;
                         instance.currentDurability = kvp.Value.currentDurability;
                         instance.equippedSlotName = kvp.Value.equippedSlotName ?? string.Empty;
@@ -149,7 +150,7 @@ public class SavePlayerData : MonoBehaviour
 
             public ItemData(ItemDataInstance item)
             {
-                itemID = item.itemID;
+                itemID = item._definition != null ? item._definition.ItemID : item.itemID;
                 quantity = item.quantity;
                 currentDurability = item.currentDurability;
                 equippedSlotName = item.equippedSlotName;

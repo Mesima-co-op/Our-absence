@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
-using UnityEditor;
-using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -71,6 +69,7 @@ public static class ItemsManager
 
                     // Initialize fields
                     instance._definition = item;
+                    instance.itemID = item.ItemID;
                     instance.quantity = myItemValue.quantity;
                     instance.currentDurability = myItemValue.currentDurability;
                     instance.equippedSlotName = myItemValue.equippedSlotName;
@@ -121,6 +120,7 @@ public static class ItemsManager
 
                     // Initialize fields
                     newItem._definition = matchingItem;
+                    newItem.itemID = matchingItem.ItemID;
                     newItem.quantity = kvp.Value.quantity;
                     newItem.currentDurability = kvp.Value.currentDurability;
                     newItem.equippedSlotName = kvp.Value.equippedSlotName ?? string.Empty;
@@ -156,7 +156,8 @@ public static class ItemsManager
         return null;
     }
 
-    [MenuItem("Tools/Items/Check for Duplicate IDs")]
+#if UNITY_EDITOR
+    [UnityEditor.MenuItem("Tools/Items/Check for Duplicate IDs")]
     public static void CheckForDuplicateIDs()
     {
         if (allItems == null || allItems.Count == 0)
@@ -194,4 +195,5 @@ public static class ItemsManager
         if (!hasDuplicates)
             Debug.Log("✅ No duplicate Item IDs found!");
     }
+#endif
 }

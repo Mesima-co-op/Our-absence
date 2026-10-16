@@ -122,8 +122,8 @@ public class EnemyLockOn : MonoBehaviour
     {
         enemyCanvas = enemyGameObject.GetComponentInChildren<Canvas>();
         crossHair = enemyGameObject.GetComponentInChildren<RawImage>();
-        enemyCanvas.enabled = true;
-        crossHair.color = crossHair_Color;
+        if (enemyCanvas != null) enemyCanvas.enabled = true;
+        if (crossHair != null) crossHair.color = crossHair_Color;
     }
 
     private void LockOnCamera()
@@ -151,7 +151,7 @@ public class EnemyLockOn : MonoBehaviour
         float scale = distanceToCamera * canvas_Scale;
 
         // Apply scale uniformly
-        enemyCanvas.transform.localScale = Vector3.one * scale;
+        if (enemyCanvas != null) enemyCanvas.transform.localScale = Vector3.one * scale;
 
         // Check if target is out of range or blocked
         float distanceToTarget = Vector3.Distance(transform.position, target.position);

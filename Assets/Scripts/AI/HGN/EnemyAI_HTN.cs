@@ -104,6 +104,34 @@ public class EnemyAI_HTN : MonoBehaviour
     {
         _animator = GetComponent<Animator>();
         _controller = GetComponent<CharacterController>();
+
+        if (agent == null) agent = GetComponent<NavMeshAgent>();
+        if (agent != null)
+        {
+            // Root motion moves the enemy; the agent only provides path steering
+            agent.updatePosition = false;
+            agent.updateRotation = false;
+        }
+    }
+
+    private void OnDisable()
+    {
+        // Covers death mid-swing: a dead enemy's weapon must not keep dealing damage
+        _weaponHitbox?.Disable();
+        if (_animator && _animator.isActiveAndEnabled) _animator.SetBool("isAttacking", false);
+    }
+
+    private void OnAnimatorMove()
+    {
+        // Apply root motion through the CharacterController so the enemy collides with walls and the player
+        if (_controller == null || !_controller.enabled) return;
+
+        Vector3 delta = _animator.deltaPosition;
+        delta.y = 0f; // vertical handled by ApplyGravity
+        _controller.Move(delta);
+        transform.rotation *= _animator.deltaRotation;
+
+        if (AgentReady) agent.nextPosition = transform.position;
     }
 
     private void Start()
@@ -113,6 +141,9 @@ public class EnemyAI_HTN : MonoBehaviour
             Debug.LogError($"[HTN] {name}: No EnemyPersonality assigned! Creating a default one.", this);
             personality = ScriptableObject.CreateInstance<EnemyPersonality>();
         }
+
+        if (!player)
+            player = GameObject.FindGameObjectWithTag("Player")?.transform;
 
         _planner = new HTNPlanner(personality);
         _lastPlayerPos = player ? player.position : transform.position;
@@ -261,7 +292,7 @@ public class EnemyAI_HTN : MonoBehaviour
         }
 
         Transform target = patrolPoints[_currentPatrolIndex];
-        LookAt(target.position);
+        LookAt(SteeringTarget(target.position));
         MoveTowards(target.position, personality.walkSpeed * 0.5f);
         SetSpeed(1f);
         SetAnimatorBlend(1f, 0f);
@@ -279,7 +310,7 @@ public class EnemyAI_HTN : MonoBehaviour
         SetTargetLayerWeight(1f);
         SetSpeed(0f);
         LookAt(player.position);
-        Vector3 localVel = transform.InverseTransformDirection(agent.desiredVelocity);
+        Vector3 localVel = AgentLocalVelocity(true);
 
         SetAnimatorBlend(0f, Mathf.Round(localVel.x));
 
@@ -291,13 +322,11 @@ public class EnemyAI_HTN : MonoBehaviour
     private void ExecuteChase()
     {
         SetTargetLayerWeight(0f);
-        Vector3 localVel = transform.InverseTransformDirection(agent.velocity);
 
-        SetAnimatorBlend(Mathf.Round(localVel.z), Mathf.Round(localVel.x));
+        // Root motion runs forward; steer along the nav path (or straight at the player without a navmesh)
+        LookAt(SteeringTarget(player.position));
+        SetAnimatorBlend(1f, 0f);
         SetSpeedFromMovement((player.position - transform.position).normalized, 2f);
-        Vector3 dir = (player.position - transform.position).normalized;
-        dir.y = 0f;
-        //_controller.Move(dir * personality.chaseSpeed * Time.deltaTime);
 
         // Advance when we've closed to optimal range
         float dist = Vector3.Distance(transform.position, player.position);
@@ -411,7 +440,7 @@ public class EnemyAI_HTN : MonoBehaviour
     {
         SetTargetLayerWeight(1f);
         SetSpeed(0f);
-        Vector3 localVel = transform.InverseTransformDirection(agent.desiredVelocity);
+        Vector3 localVel = AgentLocalVelocity(true);
 
         SetAnimatorBlend(0f, Mathf.Round(localVel.x));
 
@@ -477,7 +506,7 @@ public class EnemyAI_HTN : MonoBehaviour
         if (_planner.CurrentTaskTimer <= Time.deltaTime * 1.5f)
         {
             SetTargetLayerWeight(0f);
-            _animator.SetTrigger("Roll");
+            _animator.SetTrigger("roll");
             _lastRollTime = Time.time;
         }
 
@@ -600,6 +629,23 @@ public class EnemyAI_HTN : MonoBehaviour
         Vector3 dir = (target - transform.position).normalized;
         dir.y = 0f;
         //_controller.Move(dir * spd * Time.deltaTime);
+    }
+
+    private bool AgentReady => agent != null && agent.enabled && agent.isOnNavMesh;
+
+    /// <summary>Next corner of the nav path towards the destination, or the destination itself.</summary>
+    private Vector3 SteeringTarget(Vector3 destination)
+    {
+        if (!AgentReady) return destination;
+
+        agent.SetDestination(destination);
+        return agent.hasPath ? agent.steeringTarget : destination;
+    }
+
+    private Vector3 AgentLocalVelocity(bool desired)
+    {
+        if (!AgentReady) return Vector3.zero;
+        return transform.InverseTransformDirection(desired ? agent.desiredVelocity : agent.velocity);
     }
 
     private void LookAt(Vector3 target)
