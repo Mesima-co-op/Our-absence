@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f465abd918425d40a2aef7de43b1054, type: 3}
+  m_Name: Personality_Skirmisher
+  m_EditorClassIdentifier: 
+  personalityName: Skirmisher
+  aggression: 0.5
+  caution: 0.45
+  unpredictability: 0.4
+  weightAttackMelee: 4
+  weightReposition: 6
+  weightRetreat: 3
+  weightCircle: 8
+  weightPrepare: 1
+  weightDodge: 7
+  weightChase: 5
+  minCombatTime: 1
+  maxCombatTime: 2.5
+  minFootworkTime: 0.3
+  maxFootworkTime: 1.2
+  attackCooldown: 1.2
+  maxConsecutiveAttacks: 1
+  walkSpeed: 2
+  combatSpeed: 4
+  chaseSpeed: 6
+  footworkSpeed: 1.8
+  meleeAttackRange: 2
+  optimalCombatRange: 4
+  stopChasingRange: 10
+  distanceBuffer: 0.5
+  maxRetreatDistance: 5
+  detectionRadius: 10
+  detectionAngle: 45
+  orbitRadius: 5
+  orbitSpeed: 2.5
+  strafeJitter: 0.3
+  rollCooldown: 3
+  rollChance: 0.6
+  minRestTime: 1
+  maxRestTime: 3

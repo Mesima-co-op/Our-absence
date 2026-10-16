@@ -536,7 +536,8 @@ public class EquipmentControl : MonoBehaviour
                 return new[] { MainMenuController.ItemType.Chestplate };
             case "Leggings":
                 return new[] { MainMenuController.ItemType.Leggings };
-            case "Gauntlets":
+            case "GauntletsL":
+            case "GauntletsR":
                 return new[] { MainMenuController.ItemType.Gauntlets };
             case "Arrows1":
             case "Arrows2":
@@ -604,7 +605,7 @@ public class EquipmentControl : MonoBehaviour
                     case MainMenuController.ItemType.Helmet when slot.button.name == "Helmet":
                     case MainMenuController.ItemType.Chestplate when slot.button.name == "Chestplate":
                     case MainMenuController.ItemType.Leggings when slot.button.name == "Leggings":
-                    case MainMenuController.ItemType.Gauntlets when slot.button.name == "Gauntlets":
+                    case MainMenuController.ItemType.Gauntlets when slot.button.name.StartsWith("Gauntlets") && (slot.IsEmpty() || slot.button.name == "GauntletsR"):
                     case MainMenuController.ItemType.Arrows when (slot.button.name == "Arrows1" || slot.button.name == "Arrows2"):
                     case MainMenuController.ItemType.Bolts when (slot.button.name == "Bolts1" || slot.button.name == "Bolts2"):
                         return slot;

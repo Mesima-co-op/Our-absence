@@ -12,10 +12,10 @@ using UnityEngine.AI;
 [RequireComponent(typeof(AnimationManager))]
 public class Player_controller : MonoBehaviour
 {
-    public int MaxHealth;
     public Action OnHealthChange;
-    public int CurrentHealth => Mathf.CeilToInt(m_CurrentHealth);
-    private float m_CurrentHealth;
+    public int CurrentHealth => healthSystem != null ? healthSystem.Health : 0;
+    public int MaxHealth => healthSystem != null ? healthSystem.MaxHealth : 0;
+    private HealthSystem healthSystem;
 
     private CharacterController controller;
     private PlayerInput playerInput;
@@ -62,6 +62,8 @@ public class Player_controller : MonoBehaviour
         playerRig = GetComponentInChildren<Rig>();
         mainCamera = Camera.main;
         equipmentControl = FindObjectOfType<EquipmentControl>();
+        healthSystem = GetComponent<HealthSystem>();
+        if (healthSystem != null) healthSystem.OnHealthChanged += (_, _) => OnHealthChange?.Invoke();
 
         // Initialize movement animation controller
         movementAnimations = new MovementAnimationController(animationManager);
@@ -78,14 +80,13 @@ public class Player_controller : MonoBehaviour
     void Start()
     {
         GlobalVariables = FindObjectOfType<ObjectsState>();
-        m_CurrentHealth = MaxHealth;
     }
 
     private void Update()
     {
         GetInput();
 
-        if (isPickingUp == false) equipmentControl.PickUpItem(this.gameObject, rangeOfItemDetection);
+        if (isPickingUp == false && equipmentControl != null) equipmentControl.PickUpItem(this.gameObject, rangeOfItemDetection);
 
         if (!attackAnimations.IsAttacking())
         {
@@ -104,8 +105,7 @@ public class Player_controller : MonoBehaviour
 
     public void ChangeHealth(float changeAmount)
     {
-        m_CurrentHealth += changeAmount;
-        OnHealthChange?.Invoke();
+        if (healthSystem != null) healthSystem.ChangeHealth(changeAmount);
     }
 
     private void GetInput()
@@ -196,15 +196,6 @@ public class Player_controller : MonoBehaviour
             rb.AddForce(pushDir * pushForce, ForceMode.Impulse);
         }
 
-        if (hit.gameObject.GetComponentInChildren<DamageSystem>())
-        {
-            if (hit.gameObject.GetComponentInChildren<DamageSystem>().script.IsAttacking())
-            {
-                var HS = transform.GetComponent<HealthSystem>();
-                int damage = hit.gameObject.GetComponentInChildren<DamageSystem>().script.damage;
-                HS.TakeDamage(damage);
-            }
-        }
     }
 
     private void HandleShortcuts()
