@@ -35,6 +35,7 @@ public class MainMenuController : MonoBehaviour
     private EquipmentControl currentEquipmentControl;
     [Header("templets")]
     public Texture2D itemTemp;
+    public Texture2D itemTempHover;
     public Font myFont;
 
     #region Unity Lifecycle
@@ -92,6 +93,8 @@ public class MainMenuController : MonoBehaviour
         inventoryButton.clicked += OnInventoryButtonClicked;
         equipmentButton.clicked += OnEquipmentButtonClicked;
         settingsButton.clicked += OnSettingsButtonClicked;
+
+        SetSelectedOption("");
     }
 
     private void SetInitialView()
@@ -152,19 +155,50 @@ public class MainMenuController : MonoBehaviour
     {
         ShowInventoryView();
         currentEquipmentControl = FindAnyObjectByType<EquipmentControl>();
+        SetSelectedOption("Inventory");
         debugMenu.DebugLog("Switched to Inventory view");
     }
 
     public void OnEquipmentButtonClicked()
     {
         ShowEquipmentView();
+        SetSelectedOption("Equipment");
         debugMenu.DebugLog("Switched to Equipment view");
     }
 
     private void OnSettingsButtonClicked()
     {
         ShowSettingsView();
+        SetSelectedOption("Setting");
         debugMenu.DebugLog("Switched to Settings view");
+    }
+
+    public void SetSelectedOption(string option)
+    {
+        switch (option)
+        {
+            case "Setting":
+                inventoryButton.style.color = new Color(0.7f, 0.7f, 0.7f, 1);
+                equipmentButton.style.color = new Color(0.7f, 0.7f, 0.7f, 1);
+                settingsButton.style.color = Color.yellow;
+                break;
+            case "Equipment":
+                inventoryButton.style.color = new Color(0.7f, 0.7f, 0.7f, 1);
+                equipmentButton.style.color = Color.yellow;
+                settingsButton.style.color = new Color(0.7f, 0.7f, 0.7f, 1);
+                break;
+            case "Inventory":
+                inventoryButton.style.color = Color.yellow;
+                equipmentButton.style.color = new Color(0.7f, 0.7f, 0.7f, 1);
+                settingsButton.style.color = new Color(0.7f, 0.7f, 0.7f, 1);
+                break;
+            default:
+                inventoryButton.style.color = Color.yellow;
+                equipmentButton.style.color = new Color(0.7f, 0.7f, 0.7f, 1);
+                settingsButton.style.color = new Color(0.7f, 0.7f, 0.7f, 1);
+                break;
+
+        }
     }
 
     private void ShowInventoryView()
@@ -262,29 +296,78 @@ public class MainMenuController : MonoBehaviour
             .ToList();
         }
 
-        itemsList.makeItem = () => new Button();
+        itemsList.fixedItemHeight = 85;
+        itemsList.makeItem = () =>
+        {
+            var button = new Button();
+            button.style.flexDirection = FlexDirection.Row;
+            button.style.alignItems = Align.Center;
+            button.style.width = Length.Percent(100);
+            button.style.marginBottom = 6;
+            button.style.borderTopWidth = 0;
+            button.style.borderBottomWidth = 0;
+            button.style.borderLeftWidth = 0;
+            button.style.borderRightWidth = 0;
+
+
+            // Icon
+            var icon = new VisualElement();
+            icon.name = "icon";
+            icon.style.width = 74;
+            icon.style.height = 74;
+            icon.style.marginTop = 5;
+            icon.style.backgroundPositionX = BackgroundPropertyHelper.ConvertScaleModeToBackgroundPosition(ScaleMode.StretchToFill);
+            icon.style.backgroundPositionY = BackgroundPropertyHelper.ConvertScaleModeToBackgroundPosition(ScaleMode.StretchToFill);
+            icon.style.backgroundRepeat = BackgroundPropertyHelper.ConvertScaleModeToBackgroundRepeat(ScaleMode.StretchToFill);
+            icon.style.backgroundSize = BackgroundPropertyHelper.ConvertScaleModeToBackgroundSize(ScaleMode.StretchToFill);
+
+            // Text
+            var label = new Label();
+            label.name = "label";
+            label.style.flexGrow = 1;
+            label.style.unityTextAlign = TextAnchor.MiddleLeft;
+            label.style.height = Length.Percent(100);
+            //label.style.unityTextOutlineColor = new Color(1f, 0.35f, 0f, 1f);
+            //label.style.unityTextOutlineWidth = 0.1f;
+            label.style.color = new Color(0.7f, 0.7f, 0.7f, 1f);
+
+            // Hover start
+            button.RegisterCallback<PointerEnterEvent>(evt =>
+            {
+                button.style.backgroundImage = itemTempHover;
+            });
+
+            // Hover end
+            button.RegisterCallback<PointerLeaveEvent>(evt =>
+            {
+                button.style.backgroundImage = itemTemp;
+            });
+
+
+            button.Add(icon);
+            button.Add(label);
+
+            return button;
+        };
 
         itemsList.bindItem = (element, index) =>
         {
             if (index >= itemsList.itemsSource.Count) return;
 
             var item = (ItemDataInstance)itemsList.itemsSource[index];
+
             var button = element as Button;
+            var icon = button.Q<VisualElement>("icon");
+            var label = button.Q<Label>("label");
 
-            button.text = item._definition.ItemName;
+            label.text = item._definition.ItemName;
+            label.style.unityFontDefinition = new StyleFontDefinition(myFont);
 
-            button.style.backgroundImage = new StyleBackground(itemTemp);
+            icon.style.backgroundImage = item._definition.Icon;
 
-            button.style.backgroundColor = new Color(0.1f, 0.1f, 0.1f, 0.6f);
+            button.style.backgroundImage = itemTemp;
+            button.style.backgroundColor = new Color(0f, 0f, 0f, 0f);
 
-            button.style.unityFontDefinition = new StyleFontDefinition(myFont);
-            button.style.fontSize = 18;
-            button.style.color = Color.white;
-
-            button.style.paddingLeft = 8;
-            button.style.paddingRight = 8;
-            button.style.borderTopLeftRadius = 6;
-            button.style.borderBottomLeftRadius = 6;
 
             // Clear previous event handlers
             button.clicked -= null;

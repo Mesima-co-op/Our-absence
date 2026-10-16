@@ -77,10 +77,11 @@ public class DrawAndUndrawWeapons : MonoBehaviour
                                 rightWeaponPrefab.transform
                             );
             spawnedItem.transform.SetParent(rightWeaponPrefab.transform, false);
-            spawnedItem.GetComponentInChildren<Rigidbody>().isKinematic = true;
+            var heldBody = spawnedItem.GetComponentInChildren<Rigidbody>();
+            if (heldBody != null) heldBody.isKinematic = true;
             spawnedItem.transform.localRotation = Quaternion.Euler(90f, 0, 90f);
             spawnedItem.transform.localPosition = new Vector3(0f, 0.05f, 0f);
-            spawnedItem.GetComponent<PickUpItem>().enabled = false;
+            PrepareHeldWeapon(spawnedItem);
             spawnedItem.transform.localScale = new Vector3(
     item._definition.ObjectRef.transform.localScale.x / this.transform.localScale.x,
     item._definition.ObjectRef.transform.localScale.y / this.transform.localScale.y,
@@ -115,10 +116,11 @@ public class DrawAndUndrawWeapons : MonoBehaviour
                 leftWeaponPrefab.transform
             );
             spawnedItem.transform.SetParent(leftWeaponPrefab.transform, false);
-            spawnedItem.GetComponentInChildren<Rigidbody>().isKinematic = true;
+            var heldBody = spawnedItem.GetComponentInChildren<Rigidbody>();
+            if (heldBody != null) heldBody.isKinematic = true;
             spawnedItem.transform.localRotation = Quaternion.Euler(90f, 90f, 0f);
             spawnedItem.transform.localPosition = new Vector3(0f, 0.05f, 0f);
-            spawnedItem.GetComponent<PickUpItem>().enabled = false;
+            PrepareHeldWeapon(spawnedItem);
             spawnedItem.transform.localScale = new Vector3(
     item._definition.ObjectRef.transform.localScale.x / this.transform.localScale.x,
     item._definition.ObjectRef.transform.localScale.y / this.transform.localScale.y,
@@ -137,27 +139,39 @@ public class DrawAndUndrawWeapons : MonoBehaviour
             animationManager.SetBoolParam("isWeaponDrawn", false);
 
             // Remove the weapon from the left hand
-            foreach (Transform child in leftWeaponPrefab.transform)
-            {
-                if (item1?._definition != null ? child.name.Contains(item1._definition.name) : false ||
-                item2?._definition != null ? child.name.Contains(item2._definition.name) : false)
-                {
-                    Destroy(child.gameObject);
-                    Debug.Log($"Destroyed weapon: {child.name} (matched by name)");
-                    break;
-                }
-            }
+            DestroyHeldWeapon(leftWeaponPrefab.transform, item1, item2);
+            DestroyHeldWeapon(rightWeaponPrefab.transform, item1, item2);
+        }
+    }
 
-            foreach (Transform child in rightWeaponPrefab.transform)
+    private static bool MatchesItem(Transform child, ItemDataInstance item)
+    {
+        return item?._definition != null && child.name.Contains(item._definition.name);
+    }
+
+    private void DestroyHeldWeapon(Transform hand, ItemDataInstance item1, ItemDataInstance item2)
+    {
+        foreach (Transform child in hand)
+        {
+            if (MatchesItem(child, item1) || MatchesItem(child, item2))
             {
-                if (item1?._definition != null ? child.name.Contains(item1._definition.name) : false ||
-                item2?._definition != null ? child.name.Contains(item2._definition.name) : false)
-                {
-                    Destroy(child.gameObject);
-                    Debug.Log($"Destroyed weapon: {child.name} (matched by name)");
-                    break;
-                }
+                Destroy(child.gameObject);
+                Debug.Log($"Destroyed weapon: {child.name} (matched by name)");
+                break;
             }
         }
+    }
+
+    /// <summary>
+    /// A weapon in hand must not be picked up again or collide physically,
+    /// but its colliders must still report triggers so WeaponDamageSystem can hit enemies.
+    /// </summary>
+    private static void PrepareHeldWeapon(GameObject weapon)
+    {
+        var pickUp = weapon.GetComponent<PickUpItem>();
+        if (pickUp != null) pickUp.enabled = false;
+
+        foreach (var col in weapon.GetComponentsInChildren<Collider>())
+            col.isTrigger = true;
     }
 }

@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f465abd918425d40a2aef7de43b1054, type: 3}
+  m_Name: Personality_Goul_Willy
+  m_EditorClassIdentifier: 
+  personalityName: Willy
+  aggression: 0.49
+  caution: 0.067
+  unpredictability: 0.3
+  weightAttackMelee: 7
+  weightReposition: 2
+  weightRetreat: 1
+  weightCircle: 3
+  weightPrepare: 1
+  weightDodge: 2
+  weightChase: 8
+  minCombatTime: 1
+  maxCombatTime: 3
+  minFootworkTime: 0.1
+  maxFootworkTime: 5
+  attackCooldown: 1
+  maxConsecutiveAttacks: 3
+  walkSpeed: 3
+  combatSpeed: 3.5
+  chaseSpeed: 6
+  footworkSpeed: 2
+  meleeAttackRange: 1
+  optimalCombatRange: 1.5
+  stopChasingRange: 15
+  distanceBuffer: 0.5
+  maxRetreatDistance: 10
+  detectionRadius: 15
+  detectionAngle: 90
+  orbitRadius: 10
+  orbitSpeed: 2
+  strafeJitter: 0.3
+  rollCooldown: 3
+  rollChance: 0.2
+  minRestTime: 0
+  maxRestTime: 10
