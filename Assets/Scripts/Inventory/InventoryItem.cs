@@ -20,6 +20,8 @@ public class InventoryItem : ScriptableObject
     [SerializeField] private int maxStackSize;
     [SerializeField] private float maxDurability; // For items that can degrade
     [SerializeField] private bool isDroppable;
+    [Tooltip("Clothing worn on the character while this item is equipped (armour only)")]
+    [SerializeField] private OutfitPiece wearable;
 
     public override string ToString()
     {
@@ -46,5 +48,6 @@ public class InventoryItem : ScriptableObject
     public int MaxStackSize => maxStackSize;
     public float MaxDurability => maxDurability;
     public bool IsDroppable => isDroppable;
+    public OutfitPiece Wearable => wearable;
 
 }

@@ -14,6 +14,9 @@ public class EquipmentControl : MonoBehaviour
     private VisualElement optionMenu;
     private VisualElement clickCatcher;
 
+    /// <summary>Raised when an item goes into (true) or comes out of (false) an equipment slot: (slot name, item, equipped).</summary>
+    public static event Action<string, ItemDataInstance, bool> OnEquipmentChanged;
+
     [Header("Equipment State")]
     public EquipmentSlot selectedSlot;
     public Dictionary<string, EquipmentSlot> equipmentSlots;
@@ -165,10 +168,12 @@ public class EquipmentControl : MonoBehaviour
         if (previousItem != null)
         {
             previousItem.equippedSlotName = null;
+            if (previousItem != item) OnEquipmentChanged?.Invoke(slot.GetName(), previousItem, false);
         }
 
         // Change new item slot name
         slot.item.equippedSlotName = slot.button.name;
+        OnEquipmentChanged?.Invoke(slot.GetName(), item, true);
 
         Debug.Log($"Equipped {item._definition.ItemName} to {slot.button.name}");
         selectedSlot = null;
@@ -194,6 +199,7 @@ public class EquipmentControl : MonoBehaviour
 
         // Return item to inventory
         item.equippedSlotName = null;
+        OnEquipmentChanged?.Invoke(slot.GetName(), item, false);
 
         Debug.Log($"Unequipped {item._definition.ItemName} from {slot.button.name}");
         ClearOptionMenu();
@@ -231,6 +237,7 @@ public class EquipmentControl : MonoBehaviour
             MainMenuController.ItemType.Chestplate => MainMenuController.CategoryType.Armor,
             MainMenuController.ItemType.Leggings => MainMenuController.CategoryType.Armor,
             MainMenuController.ItemType.Gauntlets => MainMenuController.CategoryType.Armor,
+            MainMenuController.ItemType.Boots => MainMenuController.CategoryType.Armor,
             MainMenuController.ItemType.Arrows => MainMenuController.CategoryType.Ammo,
             MainMenuController.ItemType.Bolts => MainMenuController.CategoryType.Ammo,
             MainMenuController.ItemType.MagicItem => MainMenuController.CategoryType.MagicItems,
@@ -516,6 +523,7 @@ public class EquipmentControl : MonoBehaviour
         MainMenuController.ItemType.Chestplate,
         MainMenuController.ItemType.Leggings,
         MainMenuController.ItemType.Gauntlets,
+        MainMenuController.ItemType.Boots,
         MainMenuController.ItemType.MagicItem,
         MainMenuController.ItemType.Bolts,
         MainMenuController.ItemType.Arrows,
@@ -539,6 +547,8 @@ public class EquipmentControl : MonoBehaviour
             case "GauntletsL":
             case "GauntletsR":
                 return new[] { MainMenuController.ItemType.Gauntlets };
+            case "Boots":
+                return new[] { MainMenuController.ItemType.Boots };
             case "Arrows1":
             case "Arrows2":
                 return new[] { MainMenuController.ItemType.Arrows };
@@ -605,6 +615,7 @@ public class EquipmentControl : MonoBehaviour
                     case MainMenuController.ItemType.Helmet when slot.button.name == "Helmet":
                     case MainMenuController.ItemType.Chestplate when slot.button.name == "Chestplate":
                     case MainMenuController.ItemType.Leggings when slot.button.name == "Leggings":
+                    case MainMenuController.ItemType.Boots when slot.button.name == "Boots":
                     case MainMenuController.ItemType.Gauntlets when slot.button.name.StartsWith("Gauntlets") && (slot.IsEmpty() || slot.button.name == "GauntletsR"):
                     case MainMenuController.ItemType.Arrows when (slot.button.name == "Arrows1" || slot.button.name == "Arrows2"):
                     case MainMenuController.ItemType.Bolts when (slot.button.name == "Bolts1" || slot.button.name == "Bolts2"):

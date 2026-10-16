@@ -771,7 +771,8 @@ public class MainMenuController : MonoBehaviour
         Bolts,
         MagicItem,
         QuickItem,
-        Potion
+        Potion,
+        Boots
     }
     #endregion
 }

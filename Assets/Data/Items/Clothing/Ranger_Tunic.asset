@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1efebd01bf27b3409f54e1323308383, type: 3}
+  m_Name: Ranger_Tunic
+  m_EditorClassIdentifier: 
+  itemName: Ranger Tunic
+  itemSubType: 6
+  itemCategory: 1
+  itemID: 106
+  icon: {fileID: 2800000, guid: 3de109ef799275242982d1f3fffbb68b, type: 3}
+  objectRef: {fileID: 0}
+  isStackable: 0
+  maxStackSize: 1
+  maxDurability: 100
+  isDroppable: 1
+  wearable: {fileID: 11400000, guid: 8c66d4ce431354745870bb933a450130, type: 2}

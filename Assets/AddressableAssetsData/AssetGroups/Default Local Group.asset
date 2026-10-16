@@ -17,14 +17,68 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 3f173269238ee3640971fcd60d6c66b6
   m_SerializeEntries:
+  - m_GUID: 0f06ddbc47f442a4b9dd6ab410e0a92a
+    m_Address: Assets/Data/Items/Clothing/Peasant_Shirt.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - InventoryItems
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 383a5632b1f3cdb4dbf1493d4420fbfd
+    m_Address: Assets/Data/Items/Clothing/Ranger_Tunic.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - InventoryItems
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3f8e897fba62c8a4dafd710856086fe3
     m_Address: Assets/Scripts/items/ScriptableObjects/ShortSword1.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - InventoryItems
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6141b646836506f4bb88eceb5a5199e6
+    m_Address: Assets/Data/Items/Clothing/Ranger_Bracers.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - InventoryItems
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9920b14400db36e4a82b887507db5425
+    m_Address: Assets/Data/Items/Clothing/Ranger_Hood.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - InventoryItems
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c76ae30d4cede7f4fb5d337a984a99b2
+    m_Address: Assets/Data/Items/Clothing/Peasant_Shoes.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - InventoryItems
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d45ed3e812d85c5419416b58a7565b3c
+    m_Address: Assets/Data/Items/Clothing/Peasant_Trousers.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - InventoryItems
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dc29169b9312db64aab91f978badd79f
     m_Address: Assets/Scripts/items/ScriptableObjects/RustyShortSword.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - InventoryItems
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e8079cc7bfc364f4488275aaef958b95
+    m_Address: Assets/Data/Items/Clothing/Peasant_Sleeves.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - InventoryItems
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e94cd0275f9f7d148b98370edf6e9585
+    m_Address: Assets/Data/Items/Clothing/Ranger_Trousers.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - InventoryItems
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f6dec42400c52134d8fe4062cc211144
+    m_Address: Assets/Data/Items/Clothing/Ranger_Boots.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - InventoryItems

@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 ///
 ///   F1  show/hide panel     H  heal to full        K  kill the player (tests death + reload)
 ///   G   give all items      P  back to spawn       M  complete the test mission (NPC dialogue)
+///   O   cycle outfits on the player (naked → peasant → ranger)
 ///   F9  wipe the test save and reload the lab
 /// </summary>
 [DefaultExecutionOrder(-1000)] // must pick the test slot before SavePlayerData loads anything
@@ -40,6 +41,7 @@ public class FeatureTestHelper : MonoBehaviour
         if (kb.pKey.wasPressedThisFrame) BackToSpawn();
         if (kb.mKey.wasPressedThisFrame) CompleteTestMission();
         if (kb.f9Key.wasPressedThisFrame) ResetTestSave();
+        if (kb.oKey.wasPressedThisFrame) CycleOutfit();
     }
 
     // ── Actions ─────────────────────────────────────────────────────────
@@ -86,6 +88,36 @@ public class FeatureTestHelper : MonoBehaviour
             menu.AddItemToInventory(item);
         }
         Report($"Added {ItemsManager.allItems.Count} item(s) to the inventory (open it with I)");
+    }
+
+    private int outfitIndex;
+
+    /// <summary>Quick look at the clothing without the menus: naked → peasant set → ranger set.</summary>
+    private void CycleOutfit()
+    {
+        var player = FindObjectOfType<Player_controller>();
+        var outfit = player != null ? player.GetComponent<CharacterOutfit>() : null;
+        if (outfit == null)
+        {
+            Report("The player has no CharacterOutfit (not Player_Base)");
+            return;
+        }
+        if (!ItemsManager.isLoaded)
+        {
+            Report("Items not ready yet");
+            return;
+        }
+
+        string[] sets = { "", "Peasant", "Ranger" };
+        outfitIndex = (outfitIndex + 1) % sets.Length;
+        outfit.TakeOffAll();
+        foreach (var definition in ItemsManager.allItems)
+        {
+            var piece = definition != null ? definition.Wearable : null;
+            if (piece != null && sets[outfitIndex] != "" && piece.name.StartsWith(sets[outfitIndex]))
+                outfit.Wear(piece);
+        }
+        Report(outfitIndex == 0 ? "Outfit: naked" : $"Outfit: {sets[outfitIndex]} set (preview only, not equipped in the menu)");
     }
 
     private void BackToSpawn()
@@ -142,7 +174,7 @@ public class FeatureTestHelper : MonoBehaviour
             "<b>FEATURE TEST LAB</b>   (F1 hide)\n" +
             $"HP {hp}   ·   save slot: <b>test</b> (real saves untouched)\n\n" +
             "<b>H</b> heal   <b>K</b> kill   <b>G</b> give all items   <b>P</b> to spawn\n" +
-            "<b>M</b> complete test mission   <b>F9</b> wipe test save\n" +
+            "<b>M</b> complete test mission   <b>F9</b> wipe test save   <b>O</b> outfits\n" +
             "<b>F5</b> save   <b>I/Esc</b> menu (Save & Quit)   <b>E</b> pick up / talk\n" +
             (string.IsNullOrEmpty(stationNotes) ? "" : "\n" + stationNotes) +
             (Time.unscaledTime - lastActionTime < 5f && lastAction != "" ? $"\n\n<color=#f0c070>{lastAction}</color>" : "");

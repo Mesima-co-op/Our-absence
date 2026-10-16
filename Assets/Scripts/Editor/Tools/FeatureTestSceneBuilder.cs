@@ -64,6 +64,7 @@ public static class FeatureTestSceneBuilder
 
         TheDescentPopulator.CopyGameplayRoots(scene, "dialoguePanel");
         TheDescentPopulator.PlacePlayer(scene, spawn);
+        PlayerSwapTool.SwapPlayer(scene); // the dressable Player_Base instead of the Paladin
         var player = scene.GetRootGameObjects().FirstOrDefault(r => r.name == "Player");
 
         BuildCharacters(stations, player, scene);
@@ -94,6 +95,10 @@ public static class FeatureTestSceneBuilder
         }
 
         // Campfire hazard
+        // Clothing: no props needed, the items come from G and are worn from the Equipment menu
+        var wardrobe = Group(root, "Station - Wardrobe");
+        Sign(wardrobe, "WARDROBE", "G gives the clothes · I > Equipment: Helmet, Chestplate, Gauntlets, Leggings, Boots · O cycles outfits", new Vector3(-16, 0, 5), 0);
+
         var fire = Group(root, "Station - Campfire");
         Sign(fire, "CAMPFIRE", "Stand in it: 5 damage per second, watch the HUD bar · H heals", new Vector3(9, 0, 4), 0);
         Spawn(CampfirePrefab, fire, new Vector3(9, 0, 8));
@@ -236,7 +241,7 @@ public static class FeatureTestSceneBuilder
         so.FindProperty("stationNotes").stringValue =
             "<b>Stations</b> (from spawn)\n" +
             "• ahead-left: weapons rack · ahead-right: campfire\n" +
-            "• ahead: training dummies · left: NPC\n" +
+            "• ahead: training dummies · left: NPC, wardrobe sign\n" +
             "• right: one-way ledge · behind: door to The Descent\n" +
             "• far ahead: one enemy per AI personality";
         so.ApplyModifiedPropertiesWithoutUndo();

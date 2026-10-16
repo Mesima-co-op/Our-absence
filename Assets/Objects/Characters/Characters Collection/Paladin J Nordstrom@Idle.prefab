@@ -2233,6 +2233,7 @@ GameObject:
   - component: {fileID: 1682337272458416123}
   - component: {fileID: 2186055105918183177}
   - component: {fileID: 5972208744022198534}
+  - component: {fileID: 2267697511458149945}
   m_Layer: 7
   m_Name: Paladin J Nordstrom@Idle
   m_TagString: Player
@@ -2476,7 +2477,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   direction: {x: 0, y: 0, z: 0}
-  speed: 5
+  speed: 1.8
+  runSpeed: 4.2
+  acceleration: 14
   gravity: 9.81
   rotateSpeed: 5
   pushForce: 1
@@ -2544,10 +2547,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3142a44c2a71e6a48aad78a070143d10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Player_controller: {fileID: 0}
+  UIDoc: {fileID: 0}
   uiSlider: {fileID: 0}
-  gameObject: {fileID: 7392617814582920060}
+  deathTarget: {fileID: 7392617814582920060}
   health: 100
   maxHealth: 100
+  playerRespawnDelay: 4
+--- !u!114 &2267697511458149945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7392617814582920060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 518f50bdf65adc849803b5b07e39aa76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  walkClipSpeed: 2.704339
+  runClipSpeed: 6.9243164
+  combatWalkClipSpeed: 2.3375201
+  combatRunClipSpeed: 6.270969
+  lockOnClipSpeed: 3.786157
+  minPlayback: 0.6
+  maxPlayback: 1.8
+  rootMotionStates:
+  - Roll
+  - Standing Dodge Backward
+  - Locked Roll
+  - Locked Standing Dodge Backward
+  paramDamping: 0.08
 --- !u!1 &7514696978176212075
 GameObject:
   m_ObjectHideFlags: 0

@@ -25,13 +25,20 @@ public class Player_controller : MonoBehaviour
     private AttackAnimationController attackAnimations;
     private EquipmentControl equipmentControl;
     private Rig playerRig;
+    private LocomotionSync locomotionSync;
+    private Vector3 planarVelocity;
 
     private Vector3 velocity;
     private Vector3 moveInput;
     public Vector3 direction;
 
     [Header("Player Settings")]
+    [Tooltip("Walking speed (m/s)")]
     [SerializeField] private float speed = 2.5f;
+    [Tooltip("Running speed while holding Run (m/s). 0 = twice the walking speed.")]
+    [SerializeField] private float runSpeed = 0f;
+    [Tooltip("How fast the player speeds up and slows down (m/s²). Higher = snappier.")]
+    [SerializeField] private float acceleration = 14f;
     [SerializeField] private float gravity = 9.81f;
     [SerializeField] private float rotateSpeed = 3f;
     [SerializeField] private float pushForce = 1f;
@@ -63,6 +70,7 @@ public class Player_controller : MonoBehaviour
         mainCamera = Camera.main;
         equipmentControl = FindObjectOfType<EquipmentControl>();
         healthSystem = GetComponent<HealthSystem>();
+        locomotionSync = GetComponent<LocomotionSync>();
         if (healthSystem != null) healthSystem.OnHealthChanged += (_, _) => OnHealthChange?.Invoke();
 
         // Initialize movement animation controller
@@ -92,8 +100,17 @@ public class Player_controller : MonoBehaviour
         {
             PlayerMovement();
         }
+        else if (locomotionSync != null)
+        {
+            // Stand still while attacking; the controller's velocity must drop to zero too,
+            // or the leg animation keeps running mid-swing
+            planarVelocity = Vector3.zero;
+            ApplyGravity();
+            controller.Move(Vector3.up * velocity.y * Time.deltaTime);
+        }
 
-        if (!isLockOn && !attackAnimations.IsAttacking())
+        bool rolling = locomotionSync != null && locomotionSync.InRootMotionState;
+        if (!isLockOn && !attackAnimations.IsAttacking() && !rolling)
             PlayerRotation();
 
         if (rollAction.triggered)
@@ -131,15 +148,30 @@ public class Player_controller : MonoBehaviour
 
     private void PlayerMovement()
     {
-        float currentSpeed = CalculateCurrentSpeed();
         ApplyGravity();
 
+        if (locomotionSync != null)
+        {
+            locomotionSync.WalkSpeed = speed;
+            locomotionSync.RunSpeed = RunSpeed;
+
+            // Rolls and dodges are moved by their animation (LocomotionSync.OnAnimatorMove)
+            Vector3 target = locomotionSync.InRootMotionState ? Vector3.zero : direction * CalculateCurrentSpeed();
+            planarVelocity = Vector3.MoveTowards(planarVelocity, target, acceleration * Time.deltaTime);
+            controller.Move((planarVelocity + Vector3.up * velocity.y) * Time.deltaTime);
+            // Animator parameters come from the real velocity in LocomotionSync
+            return;
+        }
+
+        float currentSpeed = CalculateCurrentSpeed();
         Vector3 movement = (direction * currentSpeed) + Vector3.up * velocity.y;
         controller.Move(movement * Time.deltaTime);
 
         // Update movement parameters for animation
         movementAnimations.UpdateMovementParameters(animationManager.animator, moveInput, direction, IsRunning());
     }
+
+    private float RunSpeed => runSpeed > 0f ? runSpeed : speed * 2f;
 
     public void PickUpItemAnimation(float interval = 3.0f)
     {
@@ -163,7 +195,7 @@ public class Player_controller : MonoBehaviour
         if (isRolling)
             return speed * 0.7f;
         else if (isRunning)
-            return speed * 2f;
+            return RunSpeed;
         else
             return speed;
     }
@@ -175,7 +207,10 @@ public class Player_controller : MonoBehaviour
 
     private void ApplyGravity()
     {
-        if (velocity.y > -10)
+        // Keep a small downward push on the ground so isGrounded stays reliable
+        if (controller.isGrounded && velocity.y < -2f)
+            velocity.y = -2f;
+        else if (velocity.y > -10)
             velocity.y -= Time.deltaTime * gravity;
     }
 
