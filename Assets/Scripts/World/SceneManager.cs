@@ -3,114 +3,82 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// Saves and restores which pickable items still lie in this scene (and where), per save slot.
+/// Saving is driven by <see cref="GameSave.SaveGame"/>.
+/// </summary>
 public class SceneManager : MonoBehaviour
 {
-    private Dictionary<int, PickableItem> pickableItemsInScene;
-    private GameObject[] allObjects;
-    [SerializeField] private float autoSaveInterval = 60 * 5f; // Auto-save every 5 minutes default
     [SerializeField] private bool useSaveAndLoadSystem = true;
+
+    private bool loaded;
 
     void Start()
     {
         if (useSaveAndLoadSystem)
-        {
-            allObjects = Resources.FindObjectsOfTypeAll<GameObject>()
-            .Where(obj => obj.CompareTag("PickableItem") && obj.scene.IsValid())
-            .ToArray();
-
-            pickableItemsInScene = new Dictionary<int, PickableItem>();
             StartCoroutine(WaitForItemsManagerAndLoad());
-            InvokeRepeating(nameof(AutoSave), autoSaveInterval, autoSaveInterval);
-        }
-    }
-    private void Update()
-    {
-        // Keep manual save with F5 for debugging
-        if (Input.GetKeyDown(KeyCode.F5))
-        {
-            Save();
-        }
     }
 
-    private void AutoSave()
+    private static GameObject[] FindPickablesInLoadedScenes()
     {
-        Save();
-        Debug.Log("Autosave complete!");
-    }
-
-    private void Save()
-    {
-        allObjects = Resources.FindObjectsOfTypeAll<GameObject>()
-            .Where(obj => obj.CompareTag("PickableItem") && obj.scene.IsValid())
+        // Includes inactive objects: picked-up items are deactivated, not destroyed
+        return Resources.FindObjectsOfTypeAll<GameObject>()
+            .Where(obj => obj.scene.IsValid() && obj.CompareTag("PickableItem"))
             .ToArray();
-        pickableItemsInScene.Clear();
+    }
+
+    public void Save()
+    {
+        // Saving before the saved state was applied would overwrite it with the scene's initial items
+        if (!useSaveAndLoadSystem || !loaded) return;
+
+        var state = new Dictionary<int, PickableItem>();
         int i = 0;
-        foreach (GameObject obj in allObjects)
+        foreach (GameObject obj in FindPickablesInLoadedScenes())
         {
-            pickableItemsInScene[i++] = new PickableItem(obj);
+            if (obj.scene != gameObject.scene) continue;
+            var item = new PickableItem(obj);
+            if (item.itemID != -1) state[i++] = item;
         }
-        SaveAndLoad.Save<Dictionary<int, PickableItem>>(SaveAndLoad.SceneStatePath(gameObject.scene.name), pickableItemsInScene);
+        SaveAndLoad.Save(SaveAndLoad.SceneStatePath(gameObject.scene.name), state);
     }
 
     private IEnumerator WaitForItemsManagerAndLoad()
     {
-        // Wait until ItemsManager finishes loading
+        // ItemsManager is initialized by SavePlayerData; wait until the item definitions exist
         while (!ItemsManager.isLoaded)
-        {
-            yield return null; // wait one frame
-        }
+            yield return null;
 
-        Load(); // now safe to load
+        Load();
+        loaded = true;
     }
 
     private void Load()
     {
-        pickableItemsInScene = SaveAndLoad.Load<Dictionary<int, PickableItem>>(SaveAndLoad.SceneStatePath(gameObject.scene.name));
+        var saved = SaveAndLoad.Load<Dictionary<int, PickableItem>>(SaveAndLoad.SceneStatePath(gameObject.scene.name));
+        if (saved == null) return; // first visit: keep the items placed in the scene
 
-        if (pickableItemsInScene == null)
-        {
-            Debug.LogWarning("pickableItemsInScene is NULL after LoadScenePickableItems!");
-            pickableItemsInScene = new Dictionary<int, PickableItem>();
-            return;
-        }
-        int i = (pickableItemsInScene.Count() > 0 ? pickableItemsInScene.Last().Key : 0) + 1;
-        foreach (var obj in allObjects)
-        {
-            pickableItemsInScene[i++] = new PickableItem(obj);
-            Destroy(obj);
-        }
+        // The save is the truth: remove the scene's authored pickups and respawn exactly what was saved
+        foreach (var obj in FindPickablesInLoadedScenes())
+            if (obj.scene == gameObject.scene) Destroy(obj);
 
-        foreach (var obj in pickableItemsInScene.Values)
+        foreach (var entry in saved.Values)
         {
-            if (obj.itemID == -1)
+            if (!entry.isExistInScene || entry.itemID == -1) continue;
+
+            var itemDef = ItemsManager.GetItemByID(entry.itemID);
+            if (itemDef == null || itemDef.ObjectRef == null)
             {
-                Debug.LogWarning("Found invalid PickableItem (itemID == -1) in pickableItemsInScene!");
+                Debug.LogWarning($"[Save] No item definition for itemID {entry.itemID}");
+                continue;
+            }
+            if (entry.position == null || entry.position.Length < 3)
+            {
+                Debug.LogWarning($"[Save] Invalid position for itemID {entry.itemID}");
                 continue;
             }
 
-            if (obj.isExistInScene == true)
-            {
-                var itemDef = ItemsManager.GetItemByID(obj.itemID);
-                if (itemDef == null)
-                {
-                    Debug.LogWarning($"No InventoryItem found for itemID {obj.itemID}");
-                    continue;
-                }
-
-                if (obj.position == null || obj.position.Length < 3)
-                {
-                    Debug.LogError($"Invalid position array for itemID {obj.itemID}");
-                    continue;
-                }
-
-                Debug.Log($"Spawning item {obj.itemID} at {obj.position[0]}, {obj.position[1]}, {obj.position[2]}");
-
-                Instantiate(
-                    itemDef.ObjectRef,
-                    new Vector3(obj.position[0], obj.position[1], obj.position[2]),
-                    Quaternion.identity
-                );
-            }
+            Instantiate(itemDef.ObjectRef, new Vector3(entry.position[0], entry.position[1], entry.position[2]), Quaternion.identity);
         }
     }
 
@@ -124,13 +92,9 @@ public class SceneManager : MonoBehaviour
         {
             isExistInScene = obj.activeSelf;
             position = new float[] { obj.transform.position.x, obj.transform.position.y, obj.transform.position.z };
-            var itemComponent = obj.GetComponent<PickUpItem>();
-            itemID = itemComponent != null ? itemComponent.Item._definition.ItemID : -1;
+            var pickUp = obj.GetComponent<PickUpItem>(); // no ?. here: Unity's fake-null objects bypass it
+            var item = pickUp != null ? pickUp.Item : null;
+            itemID = item == null ? -1 : (item.Definition != null ? item.Definition.ItemID : item.itemID);
         }
-    }
-
-    struct Interactable
-    {
-
     }
 }

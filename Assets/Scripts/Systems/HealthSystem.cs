@@ -215,8 +215,8 @@ public class HealthSystem : MonoBehaviour
     private IEnumerator ReloadSceneAfterDelay()
     {
         yield return new WaitForSeconds(playerRespawnDelay);
-        var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
-        UnityEngine.SceneManagement.SceneManager.LoadScene(scene.buildIndex >= 0 ? scene.buildIndex : 0);
+        // Back to the last save in this area, behind the loading screen
+        SceneLoader.Load(gameObject.scene.name);
     }
 
     private void UpdateHealthUI()

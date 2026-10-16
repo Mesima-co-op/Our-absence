@@ -4,27 +4,19 @@ using System.IO;
 using System;
 using System.Collections.Generic;
 
-[System.Serializable]
 public static class SaveAndLoad
 {
-    public static string savePathPlayerState { get; private set; } = Application.persistentDataPath + "/player_state.babczyk";
-    public static string savePathSceneState { get; private set; } = Application.persistentDataPath + "/scene_state.babczyk";
+    /// <summary>Player inventory and position for the active save slot.</summary>
+    public static string savePathPlayerState => SaveSlots.PlayerStatePath(SaveSlots.CurrentSlot);
 
-    /// <summary>Pickable-item state per scene; the original Game scene keeps its existing file.</summary>
-    public static string SceneStatePath(string sceneName)
-    {
-        return sceneName == "Game"
-            ? savePathSceneState
-            : Application.persistentDataPath + $"/scene_state_{sceneName}.babczyk";
-    }
+    /// <summary>Pickable-item state of one scene for the active save slot.</summary>
+    public static string SceneStatePath(string sceneName) => SaveSlots.SceneStatePath(SaveSlots.CurrentSlot, sceneName);
 
-
-
-    public static T Load<T>(string path) where T : class, new()
+    public static T Load<T>(string path, bool quietIfMissing = false) where T : class, new()
     {
         if (!File.Exists(path))
         {
-            Debug.LogWarning($"Save file not found at {path}");
+            if (!quietIfMissing) Debug.Log($"No save file at {path} (new game or new area).");
             return null;
         }
 
@@ -35,23 +27,31 @@ public static class SaveAndLoad
         }
         catch (System.Exception ex)
         {
-            Debug.LogError($"Failed to load save: {ex}");
+            Debug.LogError($"Failed to load save {path}: {ex}");
             return null;
         }
     }
 
+    /// <summary>
+    /// Writes to a temporary file first and then swaps it in, so a crash or power loss
+    /// mid-write never leaves a half-written (corrupt) save behind.
+    /// </summary>
     public static void Save<T>(string path, T data)
     {
+        string tmp = path + ".tmp";
         try
         {
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
             string json = JsonConvert.SerializeObject(data, Formatting.Indented);
-            File.WriteAllText(path, json);
+            File.WriteAllText(tmp, json);
+
+            if (File.Exists(path)) File.Replace(tmp, path, null);
+            else File.Move(tmp, path);
         }
         catch (System.Exception ex)
         {
-            Debug.LogError($"Failed to save data: {ex}");
+            Debug.LogError($"Failed to save data to {path}: {ex}");
+            try { if (File.Exists(tmp)) File.Delete(tmp); } catch { /* best effort cleanup */ }
         }
     }
-
-
 }

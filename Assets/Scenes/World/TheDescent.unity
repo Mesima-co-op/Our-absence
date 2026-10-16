@@ -16635,7 +16635,7 @@ PrefabInstance:
       objectReference: {fileID: 96729019}
     - target: {fileID: 1682337272458416123, guid: fabd054acc829da4ebb9d70004360190, type: 3}
       propertyPath: useSaveAndLoadSystem
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2186055105918183177, guid: fabd054acc829da4ebb9d70004360190, type: 3}
       propertyPath: globalVariables

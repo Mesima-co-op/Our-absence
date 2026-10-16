@@ -14,35 +14,55 @@ public class SavePlayerData : MonoBehaviour
     [SerializeField] private float autoSaveInterval = 60 * 5f; // Auto-save every 5 minutes default
     [SerializeField] private bool useSaveAndLoadSystem = true;
     PlayerSaveData.Data data;
+    private bool inventoryLoaded;
 
     private void Start()
     {
+        // Item definitions are needed for pickups and scene state even when saving is switched off
+        if (!useSaveAndLoadSystem) ItemsManager.Initialize();
+
         if (useSaveAndLoadSystem)
         {
             // Start automatic saving
             InvokeRepeating(nameof(AutoSave), autoSaveInterval, autoSaveInterval);
             data = SaveAndLoad.Load<PlayerSaveData.Data>(SaveAndLoad.savePathPlayerState);
-            ItemsManager.Initialize(() =>
-            {
-                var itemData = ItemsManager.ConvertDataDicToInventoryItemsArrayOptimized(data?.items ?? new Dictionary<int, PlayerSaveData.ItemData>());
-                mainMenuController?.InitializeSavedItemsInInventory(itemData);
-                if (equipmentControl != null)
-                {
-                    foreach (var item in itemData)
-                    {
-                        if (!string.IsNullOrEmpty(item.equippedSlotName))
-                        {
-                            equipmentControl.EquipItem(item, equipmentControl.GetSlot(item.equippedSlotName));
-                        }
-                    }
-                }
-            }
-            );
+            StartCoroutine(RestoreInventoryWhenReady());
             // Position only applies to the scene it was saved in (saves from before this field are from Game)
             string savedScene = string.IsNullOrEmpty(data?.scene) ? "Game" : data.scene;
             if (data?.position != null && data.position.Length == 3 && savedScene == gameObject.scene.name)
+            {
+                // The CharacterController would otherwise snap the player back to where the scene placed it
+                var controller = playerController.GetComponent<CharacterController>();
+                if (controller) controller.enabled = false;
                 playerController.transform.position = new Vector3(data.position[0], data.position[1], data.position[2]);
+                if (controller) controller.enabled = true;
+            }
         }
+    }
+
+    private IEnumerator RestoreInventoryWhenReady()
+    {
+        bool itemsReady = false;
+        ItemsManager.Initialize(() => itemsReady = true);
+        while (!itemsReady) yield return null;
+
+        // When the definitions were already loaded (any scene after the first) the callback fires at once,
+        // before MainMenuController.Start has set up its categories, which would wipe what we add. Wait a frame.
+        yield return null;
+
+        var itemData = ItemsManager.ConvertDataDicToInventoryItemsArrayOptimized(data?.items ?? new Dictionary<int, PlayerSaveData.ItemData>());
+        mainMenuController?.InitializeSavedItemsInInventory(itemData);
+        if (equipmentControl != null)
+        {
+            foreach (var item in itemData)
+            {
+                if (!string.IsNullOrEmpty(item.equippedSlotName))
+                {
+                    equipmentControl.EquipItem(item, equipmentControl.GetSlot(item.equippedSlotName));
+                }
+            }
+        }
+        inventoryLoaded = true;
     }
 
     private void Update()
@@ -50,14 +70,18 @@ public class SavePlayerData : MonoBehaviour
         // Keep manual save with F5 for debugging
         if (Input.GetKeyDown(KeyCode.F5))
         {
-            Save();
+            GameSave.SaveGame();
         }
     }
 
     private void AutoSave()
     {
-        Save();
-        Debug.Log("Autosave complete!");
+        GameSave.SaveGame();
+    }
+
+    private void OnApplicationQuit()
+    {
+        if (useSaveAndLoadSystem) GameSave.SaveGame();
     }
 
     private PlayerSaveData.Data NewSaveData()
@@ -77,16 +101,24 @@ public class SavePlayerData : MonoBehaviour
         return data;
     }
 
-    private void Save()
+    /// <summary>Writes inventory and position. Call <see cref="GameSave.SaveGame"/> to save everything.</summary>
+    public bool Save()
     {
+        if (!useSaveAndLoadSystem) return false;
         if (playerController == null || mainMenuController == null)
         {
             Debug.LogWarning("Cannot save: missing references.");
-            return;
+            return false;
         }
+        // Before the saved inventory is restored, saving would overwrite it with an empty one
+        if (!inventoryLoaded) return false;
+        // Dying reloads the area; don't remember the spot where the player fell
+        var health = playerController.GetComponent<HealthSystem>();
+        if (health != null && health.IsDead) return false;
 
         var newData = NewSaveData();
         SaveAndLoad.Save<PlayerSaveData.Data>(SaveAndLoad.savePathPlayerState, newData);
+        return true;
     }
 
     [System.Serializable]
