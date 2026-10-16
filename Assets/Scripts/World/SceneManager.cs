@@ -49,7 +49,7 @@ public class SceneManager : MonoBehaviour
         {
             pickableItemsInScene[i++] = new PickableItem(obj);
         }
-        SaveAndLoad.Save<Dictionary<int, PickableItem>>(SaveAndLoad.savePathSceneState, pickableItemsInScene);
+        SaveAndLoad.Save<Dictionary<int, PickableItem>>(SaveAndLoad.SceneStatePath(gameObject.scene.name), pickableItemsInScene);
     }
 
     private IEnumerator WaitForItemsManagerAndLoad()
@@ -65,7 +65,7 @@ public class SceneManager : MonoBehaviour
 
     private void Load()
     {
-        pickableItemsInScene = SaveAndLoad.Load<Dictionary<int, PickableItem>>(SaveAndLoad.savePathSceneState);
+        pickableItemsInScene = SaveAndLoad.Load<Dictionary<int, PickableItem>>(SaveAndLoad.SceneStatePath(gameObject.scene.name));
 
         if (pickableItemsInScene == null)
         {

@@ -10,6 +10,14 @@ public static class SaveAndLoad
     public static string savePathPlayerState { get; private set; } = Application.persistentDataPath + "/player_state.babczyk";
     public static string savePathSceneState { get; private set; } = Application.persistentDataPath + "/scene_state.babczyk";
 
+    /// <summary>Pickable-item state per scene; the original Game scene keeps its existing file.</summary>
+    public static string SceneStatePath(string sceneName)
+    {
+        return sceneName == "Game"
+            ? savePathSceneState
+            : Application.persistentDataPath + $"/scene_state_{sceneName}.babczyk";
+    }
+
 
 
     public static T Load<T>(string path) where T : class, new()

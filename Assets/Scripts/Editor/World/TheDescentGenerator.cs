@@ -117,6 +117,9 @@ public static class TheDescentGenerator
             AssetDatabase.SaveAssets();
             EditorSceneManager.SaveScene(scene, ScenePath);
             Debug.Log($"[The Descent] Generated {ScenePath} ({data.treeInstanceCount} trees).");
+
+            EditorUtility.ClearProgressBar();
+            TheDescentPopulator.Populate();
         }
         finally
         {
@@ -127,6 +130,12 @@ public static class TheDescentGenerator
     // ─────────────────────────────────────────────────────────────────────────
     //  Path
     // ─────────────────────────────────────────────────────────────────────────
+
+    /// <summary>Path data is rebuilt on demand so other editor tools can query it without regenerating.</summary>
+    internal static void EnsurePath()
+    {
+        if (pathXZ == null) BuildPath();
+    }
 
     static void BuildPath()
     {
@@ -181,7 +190,7 @@ public static class TheDescentGenerator
         return h;
     }
 
-    static Vector3 PathPoint(float t, out Vector2 tangent)
+    internal static Vector3 PathPoint(float t, out Vector2 tangent)
     {
         int i = 1;
         while (i < pathT.Length - 1 && pathT[i] < t) i++;
@@ -252,7 +261,7 @@ public static class TheDescentGenerator
         AddFlatten(1.0f, Vector2.zero, 24f);                 // The Ember Hollow
     }
 
-    static Vector2 SideOffset(float t, float side)
+    internal static Vector2 SideOffset(float t, float side)
     {
         PathPoint(t, out var tan);
         return new Vector2(-tan.y, tan.x) * side;

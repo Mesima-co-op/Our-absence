@@ -143,7 +143,15 @@ public class EnemyAI_HTN : MonoBehaviour
         }
 
         if (!player)
-            player = GameObject.FindGameObjectWithTag("Player")?.transform;
+        {
+            // Bones inside the player rig are also tagged "Player"; the controller marks the real root
+            var controller = FindObjectOfType<Player_controller>();
+            if (controller) player = controller.transform;
+        }
+
+        // Drop patrol points that were never assigned or no longer exist
+        if (patrolPoints != null)
+            patrolPoints = System.Array.FindAll(patrolPoints, p => p != null);
 
         _planner = new HTNPlanner(personality);
         _lastPlayerPos = player ? player.position : transform.position;

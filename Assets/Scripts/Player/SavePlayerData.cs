@@ -38,7 +38,9 @@ public class SavePlayerData : MonoBehaviour
                 }
             }
             );
-            if (data?.position != null && data.position.Length == 3)
+            // Position only applies to the scene it was saved in (saves from before this field are from Game)
+            string savedScene = string.IsNullOrEmpty(data?.scene) ? "Game" : data.scene;
+            if (data?.position != null && data.position.Length == 3 && savedScene == gameObject.scene.name)
                 playerController.transform.position = new Vector3(data.position[0], data.position[1], data.position[2]);
         }
     }
@@ -63,6 +65,7 @@ public class SavePlayerData : MonoBehaviour
         data = new PlayerSaveData.Data()
         {
             position = new float[] { playerController.transform.position.x, playerController.transform.position.y, playerController.transform.position.z },
+            scene = gameObject.scene.name,
             items = new Dictionary<int, PlayerSaveData.ItemData>()
         };
 
@@ -93,6 +96,7 @@ public class SavePlayerData : MonoBehaviour
         public class Data
         {
             public float[] position;
+            public string scene;
             public Dictionary<int, ItemData> items = new Dictionary<int, ItemData>();
 
             [JsonIgnore]
