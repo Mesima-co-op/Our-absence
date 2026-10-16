@@ -11,26 +11,27 @@ You are cast into this decaying land, where every step forward is a struggle aga
 
 ---
 
+## Documentation
+
+Full documentation lives in the **[project wiki](https://github.com/Mesima-co-op/Our-absence/wiki)**: getting started, controls, every feature (combat, enemy AI, inventory, saves, start menu, world generator), the lore and world plan, and the development roadmap.
+
 ## Project Structure
 
 ```
 Assets/
-│── Animations/        
-│── Audio/             
-│── Effects/          
-│── Materials/         
-│── Meshes/            
-│── Objects/           
-│── Prefabs/          
-│── Resources/        
-│── Scenes/           
-│── Scripts/           
-│── Settings/          
-│── Textures/          
-│── UI/                
-│── World/             
-│── TutorialInfo/     
+├── Audio/          Sound effects and music
+├── Data/           ScriptableObject data (items, AI personalities)
+├── Effects/        Particle and light prefabs
+├── Objects/        Characters, items, environment prefabs
+├── Resources/      Runtime-loaded fonts, sprites, UI documents
+├── Scenes/         Menus/StartMenu, World/TheDescent, Game, Sandbox
+├── Scripts/        Game code by feature (AI, Combat, Inventory, Player, Saving, UI, World, Editor)
+├── Settings/       Input, rendering, ocean settings
+├── ThirdParty/     Bought/downloaded packs (BIG_Environment_Pack, Crest)
+├── UI/             UXML/USS, UI prefabs, panel settings
+└── animations/     Animator controllers and clips
 ```
+See [Project Structure](https://github.com/Mesima-co-op/Our-absence/wiki/Project-Structure) in the wiki for details and conventions.
 
 ---
 
