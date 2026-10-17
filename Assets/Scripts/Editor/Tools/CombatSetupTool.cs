@@ -308,7 +308,7 @@ public static class CombatSetupTool
         to.conditions = from.conditions;
     }
 
-    static AvatarMask Mask(string name, params AvatarMaskBodyPart[] excluded)
+    internal static AvatarMask Mask(string name, params AvatarMaskBodyPart[] excluded)
     {
         if (!AssetDatabase.IsValidFolder(MaskFolder))
             AssetDatabase.CreateFolder("Assets/animations", "Masks");

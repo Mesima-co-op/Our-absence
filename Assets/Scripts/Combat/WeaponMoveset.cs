@@ -27,6 +27,9 @@ public class WeaponMoveset : ScriptableObject
         [Range(0f, 1f)] public float chainFrom = 0.65f;
         [Tooltip("Metres the player steps forward during the swing (spread until the end of the hit window)")]
         public float lunge = 0.3f;
+        [Tooltip("The clip strikes with the left hand (like a jab). It is mirrored, so the blow comes from the hand " +
+                 "that attacks; otherwise that hand's layer would mask the punch out.")]
+        public bool mirror;
     }
 
     public string displayName = "Moveset";

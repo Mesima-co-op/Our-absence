@@ -1,36 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &152236013423576686
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6199423793945933246}
-  m_Layer: 0
-  m_Name: Grip
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6199423793945933246
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 152236013423576686}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0.5, y: 0.5, z: 0.5, w: -0.5}
-  m_LocalPosition: {x: 0.002021656, y: 0.20854077, z: -0.0010341691}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8969453031790203598}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &185836232656500424
 GameObject:
   m_ObjectHideFlags: 0
@@ -45,7 +14,7 @@ GameObject:
   - component: {fileID: 7049439001111586569}
   - component: {fileID: 556707451304355703}
   - component: {fileID: 8233755501698104943}
-  - component: {fileID: 1434234502900827387}
+  - component: {fileID: 3252047369451107552}
   m_Layer: 0
   m_Name: DragonTailSword
   m_TagString: PickableItem
@@ -68,7 +37,7 @@ Transform:
   m_Children:
   - {fileID: 8288164729887912097}
   - {fileID: 7607002190759130410}
-  - {fileID: 6199423793945933246}
+  - {fileID: 367866584911761282}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4474375441779333311
@@ -168,7 +137,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &1434234502900827387
+--- !u!114 &3252047369451107552
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -180,7 +149,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6236e575495be454cb6169f7303789d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grip: {fileID: 6199423793945933246}
+  grip: {fileID: 367866584911761282}
 --- !u!1 &607678564586972987
 GameObject:
   m_ObjectHideFlags: 0
@@ -211,6 +180,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 852762938408321706}
+  m_Father: {fileID: 8969453031790203598}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1853454862602477756
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 367866584911761282}
+  m_Layer: 0
+  m_Name: Grip
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &367866584911761282
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1853454862602477756}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.5, y: 0.5, z: 0.5, w: -0.5}
+  m_LocalPosition: {x: 0.002021656, y: 0.20854077, z: -0.0010341691}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
   m_Father: {fileID: 8969453031790203598}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2738826219018519211

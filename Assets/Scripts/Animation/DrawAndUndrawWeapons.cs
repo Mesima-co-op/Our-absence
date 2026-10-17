@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 /// <summary>
 /// Shows the equipped weapons (LW1 / RW1) on the player.
 /// - Equipped but sheathed: the weapon rests on the back (BackSocket_L / BackSocket_R).
-/// - The first attack press plays the draw animation and moves that weapon into the hand; later presses attack.
+/// - The first attack press plays the draw animation, moves that weapon into the hand and swings; later presses attack.
 /// - U (UndrawWeapon) puts every weapon back on the back. Unequipping removes it.
 /// Weapons with a WeaponGrip are placed by their handle, so they sit properly in the fist.
 /// </summary>
@@ -142,6 +142,9 @@ public class DrawAndUndrawWeapons : MonoBehaviour
     {
         yield return new WaitForSeconds(drawGrabDelay);
         MoveToHand(slot);
+        // One press draws and swings: the first attack starts as soon as the weapon is in hand
+        if (combat != null && combat.enabled && carried.TryGetValue(slot, out var weapon) && weapon.inHand)
+            Attack(slot, weapon.item);
     }
 
     // ─────────────────────────────────────────────────────────────────────

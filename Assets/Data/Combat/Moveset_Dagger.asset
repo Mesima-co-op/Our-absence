@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Moveset_Dagger
   m_EditorClassIdentifier: 
   displayName: Dagger
-  bladeInFist: {x: -0.97431785, y: -0.061666667, z: 0.21656868}
+  bladeInFist: {x: -0.61772686, y: 0.52166665, z: -0.5884535}
   reach: 1.15
   arc: 70
   combo:
@@ -21,24 +21,27 @@ MonoBehaviour:
     recovery: {fileID: 7400775424482280638, guid: 6ffdbbf4a5a990242aa57d396c5b0689, type: 3}
     speed: 1.4
     damage: 0.8
-    hitStart: 0.3846154
+    hitStart: 0.46153846
     hitEnd: 0.7307692
     chainFrom: 0.7907692
-    lunge: 0.3
+    lunge: 0.08
+    mirror: 0
   - clip: {fileID: -1662512729948635066, guid: 6ffdbbf4a5a990242aa57d396c5b0689, type: 3}
     recovery: {fileID: 7742298430783984577, guid: 6ffdbbf4a5a990242aa57d396c5b0689, type: 3}
     speed: 1.4
     damage: 0.85
-    hitStart: 0.3
-    hitEnd: 0.6
-    chainFrom: 0.66
-    lunge: 0.3
-  - clip: {fileID: -8061687084165900903, guid: 6ffdbbf4a5a990242aa57d396c5b0689, type: 3}
-    recovery: {fileID: -7192042517891519836, guid: 6ffdbbf4a5a990242aa57d396c5b0689, type: 3}
-    speed: 1.25
+    hitStart: 0.28125
+    hitEnd: 0.65625
+    chainFrom: 0.71625
+    lunge: 0.08
+    mirror: 0
+  - clip: {fileID: 1705686167135224321, guid: f7d01c06724f7d947a074e74c7df0e38, type: 3}
+    recovery: {fileID: 0}
+    speed: 1.3
     damage: 1.3
-    hitStart: 0.4642857
-    hitEnd: 0.64285713
-    chainFrom: 0.70285714
-    lunge: 0.4
+    hitStart: 0.15
+    hitEnd: 0.3
+    chainFrom: 0.36
+    lunge: 0.1
+    mirror: 0
   inputBuffer: 0.4

@@ -24,21 +24,15 @@ MonoBehaviour:
     hitStart: 0.13461539
     hitEnd: 0.26923078
     chainFrom: 0.3292308
-    lunge: 0.15
+    lunge: 0.05
+    mirror: 1
   - clip: {fileID: 1705686167135224321, guid: f7d01c06724f7d947a074e74c7df0e38, type: 3}
     recovery: {fileID: 0}
     speed: 1.1
-    damage: 1.2
+    damage: 1.25
     hitStart: 0.15
     hitEnd: 0.3
     chainFrom: 0.36
-    lunge: 0.2
-  - clip: {fileID: -8061687084165900903, guid: 6ffdbbf4a5a990242aa57d396c5b0689, type: 3}
-    recovery: {fileID: -7192042517891519836, guid: 6ffdbbf4a5a990242aa57d396c5b0689, type: 3}
-    speed: 1
-    damage: 1.6
-    hitStart: 0.4642857
-    hitEnd: 0.64285713
-    chainFrom: 0.70285714
-    lunge: 0.25
+    lunge: 0.08
+    mirror: 0
   inputBuffer: 0.4

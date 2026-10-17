@@ -83,37 +83,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &3037317836108958750
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5896471655278090517}
-  m_Layer: 0
-  m_Name: Grip
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5896471655278090517
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3037317836108958750}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0.5, y: 0.5, z: 0.5, w: -0.5}
-  m_LocalPosition: {x: -0.0024035953, y: 0.08591885, z: -0.00025449778}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 9078696431475987814}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3619031115685151816
 GameObject:
   m_ObjectHideFlags: 0
@@ -222,7 +191,7 @@ GameObject:
   - component: {fileID: 1033538808050368725}
   - component: {fileID: 1135593981277015657}
   - component: {fileID: 2810648368330763025}
-  - component: {fileID: 5673278596516101281}
+  - component: {fileID: 5534779427174677345}
   m_Layer: 0
   m_Name: RustyCurvedDagger
   m_TagString: PickableItem
@@ -245,7 +214,7 @@ Transform:
   m_Children:
   - {fileID: 4412582770006522483}
   - {fileID: 6482346707516009300}
-  - {fileID: 5896471655278090517}
+  - {fileID: 7606140388967098305}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5984368231774959951
@@ -345,7 +314,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &5673278596516101281
+--- !u!114 &5534779427174677345
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -357,7 +326,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6236e575495be454cb6169f7303789d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grip: {fileID: 5896471655278090517}
+  grip: {fileID: 7606140388967098305}
 --- !u!1 &5368702236057825788
 GameObject:
   m_ObjectHideFlags: 0
@@ -388,5 +357,36 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6772346384513340743}
+  m_Father: {fileID: 9078696431475987814}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6829049062945373404
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7606140388967098305}
+  m_Layer: 0
+  m_Name: Grip
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7606140388967098305
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6829049062945373404}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.5, y: 0.5, z: 0.5, w: -0.5}
+  m_LocalPosition: {x: -0.0024035953, y: 0.08591885, z: -0.00025449778}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
   m_Father: {fileID: 9078696431475987814}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

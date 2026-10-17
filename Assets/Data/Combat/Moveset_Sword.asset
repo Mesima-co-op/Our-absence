@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Moveset_Sword
   m_EditorClassIdentifier: 
   displayName: One-handed sword
-  bladeInFist: {x: 0.8638425, y: 0.021666666, z: -0.50329584}
+  bladeInFist: {x: 0.9595877, y: -0.11833333, z: -0.25532076}
   reach: 1.5
   arc: 70
   combo:
@@ -21,24 +21,27 @@ MonoBehaviour:
     recovery: {fileID: 7400775424482280638, guid: 6ffdbbf4a5a990242aa57d396c5b0689, type: 3}
     speed: 1
     damage: 1
-    hitStart: 0.3846154
+    hitStart: 0.46153846
     hitEnd: 0.7307692
     chainFrom: 0.7907692
-    lunge: 0.35
+    lunge: 0.12
+    mirror: 0
   - clip: {fileID: -1662512729948635066, guid: 6ffdbbf4a5a990242aa57d396c5b0689, type: 3}
     recovery: {fileID: 7742298430783984577, guid: 6ffdbbf4a5a990242aa57d396c5b0689, type: 3}
     speed: 1
     damage: 1.1
-    hitStart: 0.3
-    hitEnd: 0.6
-    chainFrom: 0.66
-    lunge: 0.35
+    hitStart: 0.28125
+    hitEnd: 0.65625
+    chainFrom: 0.71625
+    lunge: 0.12
+    mirror: 0
   - clip: {fileID: 543990450412311274, guid: 6ffdbbf4a5a990242aa57d396c5b0689, type: 3}
     recovery: {fileID: 0}
     speed: 1
     damage: 1.6
-    hitStart: 0.29166666
+    hitStart: 0.28333333
     hitEnd: 0.35
     chainFrom: 0.41
-    lunge: 0.5
+    lunge: 0.2
+    mirror: 0
   inputBuffer: 0.45

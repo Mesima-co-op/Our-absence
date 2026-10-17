@@ -29,15 +29,16 @@ public class PlayerCombat : MonoBehaviour
     public static string SlotClip(bool right, bool recovery, int step) => $"{(right ? "R" : "L")}_{(recovery ? "Rec" : "Hit")}{step + 1}";
     public static string StateName(bool recovery, int step) => $"{(recovery ? "Rec" : "Hit")}{step + 1}";
     public static string SpeedParam(bool right) => right ? "attackSpeedR" : "attackSpeedL";
+    public static string MirrorParam(bool right) => right ? "attackMirrorR" : "attackMirrorL";
 
     [Header("Bare hands")]
     [SerializeField] private WeaponMoveset unarmed;
     [SerializeField] private float fistDamage = 8f;
 
-    [Header("Aim and lunge")]
-    [Tooltip("Each swing turns toward the nearest enemy within this distance in front of the player")]
+    [Header("Lunge")]
+    [Tooltip("The lunge watches for the nearest enemy within this distance and half-angle in front of the player")]
     [SerializeField] private float aimDistance = 3f;
-    [SerializeField] private float aimAngle = 75f;
+    [SerializeField] private float aimAngle = 45f;
     [Tooltip("Stop lunging when this close to the target (m, centre to centre)")]
     [SerializeField] private float lungeStopDistance = 0.75f;
 
@@ -186,6 +187,8 @@ public class PlayerCombat : MonoBehaviour
         var step = hand.set.combo[index];
         string state = StateName(false, index);
         animator.SetFloat(SpeedParam(hand.right), Mathf.Max(0.05f, step.speed));
+        // The clips are right-handed; the left hand mirrors them, and a left-handed blow is mirrored back
+        animator.SetBool(MirrorParam(hand.right), step.mirror == hand.right);
         // From rest the layer's weight fades in instead; never blend from the empty idle state
         if (hand.resting) animator.Play(state, hand.layer, 0f);
         else animator.CrossFadeInFixedTime(state, blendIn, hand.layer, 0f);
@@ -197,7 +200,7 @@ public class PlayerCombat : MonoBehaviour
         hand.lunged = 0f;
         hand.punched.Clear();
         SetWindow(hand, false);
-        AimAtNearestEnemy();
+        FindTargetAhead();
         if (hand.weapon != null) hand.weapon.BeginSwing(step.damage);
         animator.SetBool(hand.right ? "isAttackingRight" : "isAttackingLeft", true);
     }
@@ -328,8 +331,11 @@ public class PlayerCombat : MonoBehaviour
     //  Aim and lunge
     // ─────────────────────────────────────────────────────────────────────
 
-    /// <summary>Turns the player toward the closest living enemy in front of them (soft lock).</summary>
-    private void AimAtNearestEnemy()
+    /// <summary>
+    /// Finds the closest living enemy in front of the player, so the lunge stops short of it. The player is not
+    /// turned: attacks go where the player faces (lock-on, EnemyLockOn, already faces the target).
+    /// </summary>
+    private void FindTargetAhead()
     {
         aimTarget = null;
         float best = float.MaxValue;
@@ -342,12 +348,6 @@ public class PlayerCombat : MonoBehaviour
             if (distance > aimDistance || distance < 0.01f) continue;
             if (Vector3.Angle(transform.forward, to) > aimAngle) continue;
             if (distance < best) { best = distance; aimTarget = target.transform; }
-        }
-        if (aimTarget != null)
-        {
-            Vector3 to = aimTarget.position - transform.position;
-            to.y = 0f;
-            transform.rotation = Quaternion.LookRotation(to);
         }
     }
 

@@ -141,8 +141,12 @@ public static class WeaponsAndMovesetsBuilder
             // PlayerCombat does its own lunge. Baking them made the whole body spin with the combo.
             lockRootRotation = false,
             lockRootPositionXZ = false,
-            keepOriginalOrientation = true,
-            rotationOffset = -90f, // the library's root is turned 90 degrees from the player's other clips (which face +Z)
+            // Rotation follows the body's own orientation: the pose is stored relative to where the body faces,
+            // and the net turn goes to root motion (ignored). The library's combos spin the character between
+            // steps (Sword_Regular_A ends facing away and B starts from there); this keeps every swing facing
+            // where the player faces, while the torso still twists through the swing.
+            keepOriginalOrientation = false,
+            rotationOffset = 0f,
             keepOriginalPositionXZ = true,
             // Height stays on the feet, so crouching attacks don't float
             lockRootHeightY = true,
@@ -174,7 +178,7 @@ public static class WeaponsAndMovesetsBuilder
             clip = Ual(clip), recovery = recovery != null ? Ual(recovery) : null,
             speed = speed, damage = damage, lunge = lunge,
         };
-        (step.hitStart, step.hitEnd) = MeasureHitWindow(step.clip, fists);
+        (step.hitStart, step.hitEnd, step.mirror) = MeasureHitWindow(step.clip, fists);
         step.chainFrom = Mathf.Min(0.95f, step.hitEnd + 0.06f);
         return step;
     }
@@ -190,27 +194,27 @@ public static class WeaponsAndMovesetsBuilder
         {
             var sets = new Dictionary<string, WeaponMoveset>
             {
-                // Jab, cross, hook
+                // Light attacks barely step forward, so they land where the player aims; heavier blows commit more.
+                // Jab, cross, and around again (Melee_Hook is a diving lunge, too much for boxing)
                 ["Unarmed"] = Moveset("Unarmed", "Bare hands", 0.4f,
-                    Step("Punch_Jab", null, 1.15f, 1f, 0.15f, fists: true),
-                    Step("Punch_Cross", null, 1.1f, 1.2f, 0.2f, fists: true),
-                    Step("Melee_Hook", "Melee_Hook_Rec", 1f, 1.6f, 0.25f, fists: true)),
+                    Step("Punch_Jab", null, 1.15f, 1f, 0.05f, fists: true),
+                    Step("Punch_Cross", null, 1.1f, 1.25f, 0.08f, fists: true)),
                 // One-handed sword: two quick cuts and a spinning finisher
                 ["Sword"] = Moveset("Sword", "One-handed sword", 0.45f,
-                    Step("Sword_Regular_A", "Sword_Regular_A_Rec", 1f, 1f, 0.35f),
-                    Step("Sword_Regular_B", "Sword_Regular_B_Rec", 1f, 1.1f, 0.35f),
-                    Step("Sword_Regular_C", null, 1f, 1.6f, 0.5f)),
-                // Dagger: the same cuts, faster and lighter, and a hooking stab
+                    Step("Sword_Regular_A", "Sword_Regular_A_Rec", 1f, 1f, 0.12f),
+                    Step("Sword_Regular_B", "Sword_Regular_B_Rec", 1f, 1.1f, 0.12f),
+                    Step("Sword_Regular_C", null, 1f, 1.6f, 0.2f)),
+                // Dagger: the same cuts, faster and lighter, and a straight stab
                 ["Dagger"] = Moveset("Dagger", "Dagger", 0.4f,
-                    Step("Sword_Regular_A", "Sword_Regular_A_Rec", 1.4f, 0.8f, 0.3f),
-                    Step("Sword_Regular_B", "Sword_Regular_B_Rec", 1.4f, 0.85f, 0.3f),
-                    Step("Melee_Hook", "Melee_Hook_Rec", 1.25f, 1.3f, 0.4f)),
+                    Step("Sword_Regular_A", "Sword_Regular_A_Rec", 1.4f, 0.8f, 0.08f),
+                    Step("Sword_Regular_B", "Sword_Regular_B_Rec", 1.4f, 0.85f, 0.08f),
+                    Step("Punch_Cross", null, 1.3f, 1.3f, 0.1f)),
                 // Heavy blade: four slow, wide blows
                 ["Heavy"] = Moveset("Heavy", "Heavy blade", 0.6f,
-                    Step("Sword_Heavy_1", null, 0.95f, 1f, 0.45f),
-                    Step("Sword_Heavy_2", null, 0.95f, 1.1f, 0.45f),
-                    Step("Sword_Heavy_3", null, 0.95f, 1.25f, 0.5f),
-                    Step("Sword_Heavy_4", null, 0.95f, 1.8f, 0.6f)),
+                    Step("Sword_Heavy_1", null, 0.95f, 1f, 0.2f),
+                    Step("Sword_Heavy_2", null, 0.95f, 1.1f, 0.2f),
+                    Step("Sword_Heavy_3", null, 0.95f, 1.25f, 0.25f),
+                    Step("Sword_Heavy_4", null, 0.95f, 1.8f, 0.3f)),
             };
             // How each weapon class points out of the fist, fitted to its own animations
             sets["Sword"].bladeInFist = CalibrateBlade(sets["Sword"], 0.95f, allowReverseGrip: false);
@@ -316,11 +320,12 @@ public static class WeaponsAndMovesetsBuilder
 
     /// <summary>
     /// The part of the clip (0-1) where the blow lands: the hand is in front of the body and moving fast.
-    /// (Hand speed alone also catches the wind-up behind the back.) Weapons use the right hand; fists either.
+    /// (Hand speed alone also catches the wind-up behind the back.) Weapons use the right hand; fists either,
+    /// and leftHand reports a blow thrown with the left (the step is then mirrored).
     /// </summary>
-    static (float start, float end) MeasureHitWindow(AnimationClip clip, bool fists)
+    static (float start, float end, bool leftHand) MeasureHitWindow(AnimationClip clip, bool fists)
     {
-        if (clip == null || measureRig == null) return (0.3f, 0.6f);
+        if (clip == null || measureRig == null) return (0.3f, 0.6f, false);
         var animator = measureRig.GetComponent<Animator>();
         animator.applyRootMotion = false;
         var hands = fists
@@ -337,6 +342,7 @@ public static class WeaponsAndMovesetsBuilder
 
             int frames = Mathf.Max(2, Mathf.RoundToInt(clip.length * 60f));
             var score = new float[frames + 1];
+            var handPeak = new float[hands.Length];
             var previous = new Vector3[hands.Length];
             for (int f = 0; f <= frames; f++)
             {
@@ -346,19 +352,24 @@ public static class WeaponsAndMovesetsBuilder
                 {
                     Vector3 local = measureRig.transform.InverseTransformPoint(hands[h].position);
                     if (f > 0 && local.z > 0.12f) // in front of the chest
-                        score[f] = Mathf.Max(score[f], (local - previous[h]).magnitude * frames / clip.length);
+                    {
+                        float speed = (local - previous[h]).magnitude * frames / clip.length;
+                        score[f] = Mathf.Max(score[f], speed);
+                        handPeak[h] = Mathf.Max(handPeak[h], speed);
+                    }
                     previous[h] = local;
                 }
             }
 
             int peak = System.Array.IndexOf(score, score.Max());
-            if (score[peak] <= 0f) return (0.3f, 0.6f);
+            if (score[peak] <= 0f) return (0.3f, 0.6f, false);
+            bool leftHand = hands.Length > 1 && handPeak[1] > handPeak[0];
             float threshold = score[peak] * 0.3f;
             int first = peak, last = peak;
             while (first > 1 && score[first - 1] >= threshold) first--;
             while (last < frames && score[last + 1] >= threshold) last++;
             // A frame of margin each side: the blade leads and trails the hand
-            return (Mathf.Clamp01((first - 2f) / frames), Mathf.Clamp01((last + 2f) / frames));
+            return (Mathf.Clamp01((first - 2f) / frames), Mathf.Clamp01((last + 2f) / frames), leftHand);
         }
         finally
         {
@@ -394,11 +405,31 @@ public static class WeaponsAndMovesetsBuilder
         foreach (var param in new[] { PlayerCombat.SpeedParam(true), PlayerCombat.SpeedParam(false) })
             if (controller.parameters.All(p => p.name != param))
                 controller.AddParameter(new AnimatorControllerParameter { name = param, type = AnimatorControllerParameterType.Float, defaultFloat = 1f });
+        foreach (var param in new[] { PlayerCombat.MirrorParam(true), PlayerCombat.MirrorParam(false) })
+            if (controller.parameters.All(p => p.name != param))
+                controller.AddParameter(new AnimatorControllerParameter { name = param, type = AnimatorControllerParameterType.Bool });
 
         BuildHandLayer(controller, true, "AttackRight_layer", "Mask_RightAttack");
         BuildHandLayer(controller, false, "AttackLeft_layer", "Mask_LeftAttack");
         BuildHitReactLayer(controller);
+        MaskDrawLayer(controller);
         EditorUtility.SetDirty(controller);
+    }
+
+    /// <summary>
+    /// The sword draw (shared with the enemies) turns the whole body sideways. On the player it only moves the
+    /// arms and head, so drawing keeps the player facing where they aim.
+    /// </summary>
+    static void MaskDrawLayer(AnimatorController controller)
+    {
+        var mask = CombatSetupTool.Mask("Mask_Draw",
+            AvatarMaskBodyPart.Root, AvatarMaskBodyPart.Body, AvatarMaskBodyPart.LeftLeg, AvatarMaskBodyPart.RightLeg,
+            AvatarMaskBodyPart.LeftFootIK, AvatarMaskBodyPart.RightFootIK);
+        var layers = controller.layers;
+        int index = System.Array.FindIndex(layers, l => l.name == PlayerCombat.DrawLayer);
+        if (index < 0) return;
+        layers[index].avatarMask = mask;
+        controller.layers = layers;
     }
 
     static void BuildHandLayer(AnimatorController controller, bool right, string layerName, string maskName)
@@ -417,7 +448,10 @@ public static class WeaponsAndMovesetsBuilder
                 bool recovery = r == 1;
                 var state = machine.AddState(PlayerCombat.StateName(recovery, i), new Vector3(550 + r * 250, i * 70));
                 state.motion = Placeholder(PlayerCombat.SlotClip(right, recovery, i));
-                state.mirror = !right;
+                // Mirrored per step by PlayerCombat: the left hand plays its clips mirrored, and a step thrown
+                // with the left hand (like a jab) is mirrored back
+                state.mirrorParameterActive = true;
+                state.mirrorParameter = PlayerCombat.MirrorParam(right);
                 state.writeDefaultValues = false;
                 if (!recovery)
                 {
