@@ -42,6 +42,9 @@ public class WeaponMoveset : ScriptableObject
     public float reach = 1.5f;
     [Tooltip("Half-angle of the swing's arc in front of the player (degrees)")]
     public float arc = 70f;
+    [Tooltip("Stamina each attack costs, times the step's damage multiplier (heavier finishers cost more). " +
+             "Agility lowers it (CharacterStats).")]
+    public float staminaPerAttack = 12f;
     public Step[] combo = new Step[0];
     [Tooltip("Seconds a press is remembered while the current attack is still playing")]
     public float inputBuffer = 0.45f;

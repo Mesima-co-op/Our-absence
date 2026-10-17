@@ -26,6 +26,9 @@ public class SavePlayerData : MonoBehaviour
             // Start automatic saving
             InvokeRepeating(nameof(AutoSave), autoSaveInterval, autoSaveInterval);
             data = SaveAndLoad.Load<PlayerSaveData.Data>(SaveAndLoad.savePathPlayerState);
+            // Attributes, level and experience (saves from before stats have none: the defaults stay)
+            var stats = playerController.GetComponent<CharacterStats>();
+            if (stats != null) stats.Load(data?.stats);
             StartCoroutine(RestoreInventoryWhenReady());
             // Position only applies to the scene it was saved in (saves from before this field are from Game)
             string savedScene = string.IsNullOrEmpty(data?.scene) ? "Game" : data.scene;
@@ -90,8 +93,10 @@ public class SavePlayerData : MonoBehaviour
         {
             position = new float[] { playerController.transform.position.x, playerController.transform.position.y, playerController.transform.position.z },
             scene = gameObject.scene.name,
-            items = new Dictionary<int, PlayerSaveData.ItemData>()
+            items = new Dictionary<int, PlayerSaveData.ItemData>(),
         };
+        var stats = playerController.GetComponent<CharacterStats>();
+        if (stats != null) data.stats = stats.ToSave();
 
         foreach (var itemInstance in mainMenuController.GetAllInventory())
         {
@@ -130,6 +135,7 @@ public class SavePlayerData : MonoBehaviour
             public float[] position;
             public string scene;
             public Dictionary<int, ItemData> items = new Dictionary<int, ItemData>();
+            public CharacterStats.SaveData stats;
 
             [JsonIgnore]
             public Dictionary<int, ItemDataInstance> itemsInstance;

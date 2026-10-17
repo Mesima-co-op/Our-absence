@@ -5,5 +5,11 @@
         </ui:VisualElement>
         <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" name="HealthLabel" style="position: absolute; width: 100%; height: 100%; font-size: 15%; -unity-text-align: middle-left; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 20px; justify-content: center; align-self: flex-start; align-items: flex-start; overflow: visible; visibility: visible; display: flex; opacity: 1; white-space: nowrap; left: -2px;" />
     </ui:VisualElement>
-    <ui:VisualElement style="flex-grow: 1; height: 90%; visibility: hidden; display: flex; overflow: hidden;" />
+    <ui:VisualElement name="StaminaBarBackground" style="flex-grow: 0; flex-shrink: 0; position: relative; width: 24%; height: 6%; background-image: url(&quot;project://database/Assets/UI/Main%20UI/HealthBarBackground-Nobg.png?fileID=2800000&amp;guid=0fcecd3b0efb6eb4a8ccc5b9e44a1b3c&amp;type=3#HealthBarBackground-Nobg&quot;); margin-left: 0; margin-top: -1%; flex-direction: column;">
+        <ui:VisualElement name="StaminaBarMask" style="flex-grow: 1; position: relative; width: 100%; height: 100%; overflow: visible; flex-direction: row; align-self: flex-start; margin-left: -5px;">
+            <ui:VisualElement name="StaminaBarFill" style="background-color: rgb(120, 190, 75); position: absolute; left: 8px; right: 6px; top: 32%; bottom: 32%; border-top-left-radius: 2px; border-top-right-radius: 2px; border-bottom-left-radius: 2px; border-bottom-right-radius: 2px;" />
+        </ui:VisualElement>
+        <ui:Label tabindex="-1" text="" parse-escape-sequences="true" display-tooltip-when-elided="true" name="StaminaLabel" style="position: absolute; width: 100%; height: 100%; font-size: 11px; color: rgb(235, 235, 220); -unity-text-align: middle-left; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 20px; white-space: nowrap; left: -2px;" />
+    </ui:VisualElement>
+    <ui:VisualElement style="flex-grow: 1; height: 84%; visibility: hidden; display: flex; overflow: hidden;" />
 </ui:UXML>

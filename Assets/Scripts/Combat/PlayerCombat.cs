@@ -10,6 +10,8 @@ using UnityEngine;
 ///   once the current one reaches its chainFrom point. When the presses stop, the step's recovery plays
 ///   (moving cancels it) and the hand returns to its idle.
 /// - The weapon only deals damage inside each step's hit window. Bare hands hit with the fists.
+/// - Every step costs stamina (WeaponMoveset.staminaPerAttack x the step's damage). With an empty bar
+///   (StaminaSystem) presses do nothing and the combo stops; Strength (CharacterStats) scales the damage.
 /// - Taking damage interrupts the combo and plays a hit reaction (HitReact_layer).
 /// - Overlay layers (draw, attacks, hit reactions) only have weight while they play something. A humanoid
 ///   override layer resting in an empty state at full weight freezes every bone below the hips, so the
@@ -69,6 +71,8 @@ public class PlayerCombat : MonoBehaviour
     }
 
     private CharacterController controller;
+    private StaminaSystem stamina;
+    private CharacterStats stats;
     private Transform aimTarget;
 
     private Animator animator;
@@ -92,6 +96,8 @@ public class PlayerCombat : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         controller = GetComponent<CharacterController>();
+        stamina = GetComponent<StaminaSystem>();
+        stats = GetComponent<CharacterStats>();
         rightHand =new Hand { right = true, layer = animator.GetLayerIndex(RightLayer) };
         leftHand = new Hand { right = false, layer = animator.GetLayerIndex(LeftLayer) };
         hitReactLayer = animator.GetLayerIndex(HitReactLayer);
@@ -178,8 +184,18 @@ public class PlayerCombat : MonoBehaviour
         if (hand.set == null) return;
         hand.weapon = weapon;
 
-        if (hand.step < 0 || hand.recovering) StartStep(hand, 0);
+        if (hand.step < 0 || hand.recovering)
+        {
+            if (PayFor(hand, 0)) StartStep(hand, 0);
+        }
         else hand.pressedAt = Time.time; // queue the next step
+    }
+
+    /// <summary>Spends the stamina for a combo step. False when too tired: the attack doesn't happen.</summary>
+    private bool PayFor(Hand hand, int index)
+    {
+        if (stamina == null) return true;
+        return stamina.TrySpend(hand.set.staminaPerAttack * Mathf.Max(0.1f, hand.set.combo[index].damage));
     }
 
     private void StartStep(Hand hand, int index)
@@ -297,9 +313,14 @@ public class PlayerCombat : MonoBehaviour
         bool hasNext = hand.step + 1 < hand.set.combo.Length;
         if (queued && t >= step.chainFrom)
         {
-            // Next step, or around again after the finisher
-            StartStep(hand, hasNext ? hand.step + 1 : 0);
-            return;
+            // Next step, or around again after the finisher; out of stamina the combo just ends
+            int next = hasNext ? hand.step + 1 : 0;
+            hand.pressedAt = -99f;
+            if (PayFor(hand, next))
+            {
+                StartStep(hand, next);
+                return;
+            }
         }
         if (t >= 0.98f)
         {
@@ -403,7 +424,7 @@ public class PlayerCombat : MonoBehaviour
             {
                 var fist = animator.GetBoneTransform(hand.right ? HumanBodyBones.RightHand : HumanBodyBones.LeftHand);
                 Vector3 from = fist != null ? fist.position : chest;
-                target.TakeDamage(Mathf.RoundToInt(fistDamage * step.damage));
+                target.TakeDamage(Mathf.RoundToInt(fistDamage * step.damage * (stats != null ? stats.DamageMultiplier : 1f)));
                 CombatFeedback.Hit(col.ClosestPoint(from), to, victimIsPlayer: false);
             }
         }

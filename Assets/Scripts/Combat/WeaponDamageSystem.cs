@@ -36,6 +36,7 @@ public class WeaponDamageSystem : MonoBehaviour
         wielder = GetComponentInParent<AnimationManager>();
         attackAnimations = wielder != null ? new AttackAnimationController(wielder) : null;
         comboDriven = wielder != null && wielder.GetComponent<PlayerCombat>() != null;
+        wielderStats = wielder != null ? wielder.GetComponent<CharacterStats>() : null;
         hitThisSwing.Clear();
         HitWindowOpen = false;
         SwingTrail = false;
@@ -116,7 +117,10 @@ public class WeaponDamageSystem : MonoBehaviour
         hadWindow = true;
     }
 
-    private float Damage =>baseDamage * stepDamage * (WeaponItem != null ? WeaponItem.damageModifier : 1f);
+    private CharacterStats wielderStats;
+
+    private float Damage => baseDamage * stepDamage * (WeaponItem != null ? WeaponItem.damageModifier : 1f)
+                            * (wielderStats != null ? wielderStats.DamageMultiplier : 1f); // Strength
 
     private void OnTriggerEnter(Collider other) => TryHit(other);
 

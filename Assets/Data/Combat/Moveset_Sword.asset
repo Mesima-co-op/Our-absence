@@ -16,6 +16,7 @@ MonoBehaviour:
   bladeInFist: {x: 0.9595877, y: -0.11833333, z: -0.25532076}
   reach: 1.5
   arc: 70
+  staminaPerAttack: 14
   combo:
   - clip: {fileID: 3625414872004886998, guid: 6ffdbbf4a5a990242aa57d396c5b0689, type: 3}
     recovery: {fileID: 7400775424482280638, guid: 6ffdbbf4a5a990242aa57d396c5b0689, type: 3}

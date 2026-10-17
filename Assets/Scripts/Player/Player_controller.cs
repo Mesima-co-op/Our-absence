@@ -26,6 +26,8 @@ public class Player_controller : MonoBehaviour
     private EquipmentControl equipmentControl;
     private Rig playerRig;
     private LocomotionSync locomotionSync;
+    private StaminaSystem stamina;
+    private bool sprinting;
     private Vector3 planarVelocity;
 
     private Vector3 velocity;
@@ -71,6 +73,7 @@ public class Player_controller : MonoBehaviour
         equipmentControl = FindObjectOfType<EquipmentControl>();
         healthSystem = GetComponent<HealthSystem>();
         locomotionSync = GetComponent<LocomotionSync>();
+        stamina = GetComponent<StaminaSystem>();
         if (healthSystem != null) healthSystem.OnHealthChanged += (_, _) => OnHealthChange?.Invoke();
 
         // Initialize movement animation controller
@@ -113,7 +116,9 @@ public class Player_controller : MonoBehaviour
         if (!isLockOn && !attackAnimations.IsAttacking() && !rolling)
             PlayerRotation();
 
-        if (rollAction.triggered)
+        // A roll costs stamina (none left: no roll), and can't be chained while one is playing
+        if (rollAction.triggered && controller.isGrounded && !rolling &&
+            (stamina == null || stamina.TrySpend(stamina.RollCost)))
             animationManager.HandleRollAnimation(direction, controller.isGrounded);
 
         if (isPickingUp || playerRig.weight > 0.0f)
@@ -149,6 +154,10 @@ public class Player_controller : MonoBehaviour
     private void PlayerMovement()
     {
         ApplyGravity();
+
+        // Sprinting drains stamina; when it runs dry the player drops to a walk until it recovers
+        bool wantsToRun = runAction.ReadValue<float>() == 1 && direction.sqrMagnitude > 0.01f;
+        sprinting = wantsToRun && (stamina == null || stamina.Sprint());
 
         if (locomotionSync != null)
         {
@@ -202,7 +211,7 @@ public class Player_controller : MonoBehaviour
 
     private bool IsRunning()
     {
-        return runAction.ReadValue<float>() == 1;
+        return sprinting;
     }
 
     private void ApplyGravity()

@@ -78,6 +78,7 @@ public static class WeaponsAndMovesetsBuilder
             SetUpPlayer(movesets["Unarmed"]);
             AssetDatabase.SaveAssets();
             CombatSetupTool.SetUpWeaponGrips(); // grips for the new weapons
+            StatsSetupTool.SetUpPlayer(PlayerCharacterBuilder.PrefabPath); // attacks cost stamina
             ItemAddressablesSync.RegisterAll();
             Debug.Log("[Combat] Built the movesets, the attack layers and the new weapons.");
         }
@@ -226,6 +227,7 @@ public static class WeaponsAndMovesetsBuilder
             sets["Sword"].reach = 1.5f;
             sets["Heavy"].reach = 1.85f;
             sets["Heavy"].arc = 85f; // wide sweeping blows
+            ApplyStaminaCosts(sets);
             foreach (var set in sets.Values) EditorUtility.SetDirty(set);
             AssetDatabase.SaveAssets();
             return sets;
@@ -375,6 +377,21 @@ public static class WeaponsAndMovesetsBuilder
         {
             graph.Destroy();
         }
+    }
+
+    /// <summary>
+    /// Stamina per attack (x each step's damage). With the default 100 stamina: about 11 punches,
+    /// 7 sword cuts, 11 dagger cuts or 4 heavy blows before the player has to back off.
+    /// </summary>
+    public static void ApplyStaminaCosts(IDictionary<string, WeaponMoveset> sets)
+    {
+        var costs = new Dictionary<string, float> { ["Unarmed"] = 8f, ["Sword"] = 14f, ["Dagger"] = 9f, ["Heavy"] = 22f };
+        foreach (var pair in costs)
+            if (sets.TryGetValue(pair.Key, out var set) && set != null)
+            {
+                set.staminaPerAttack = pair.Value;
+                EditorUtility.SetDirty(set);
+            }
     }
 
     static WeaponMoveset Moveset(string id, string display, float buffer, params WeaponMoveset.Step[] steps)

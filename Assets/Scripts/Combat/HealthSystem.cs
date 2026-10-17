@@ -126,6 +126,21 @@ public class HealthSystem : MonoBehaviour
         UpdateHealthUI();
     }
 
+    /// <summary>
+    /// Changes the maximum (CharacterStats: Vigor). <paramref name="fill"/> sets health to the new maximum,
+    /// otherwise health keeps its share of the bar.
+    /// </summary>
+    public void SetMaxHealth(int newMax, bool fill)
+    {
+        if (source != null) { source.SetMaxHealth(newMax, fill); return; }
+        newMax = Mathf.Max(1, newMax);
+        if (isDead) { maxHealth = newMax; return; }
+        float ratio = maxHealth > 0 ? (float)health / maxHealth : 1f;
+        maxHealth = newMax;
+        health = fill ? maxHealth : Mathf.Clamp(Mathf.RoundToInt(ratio * maxHealth), 1, maxHealth);
+        UpdateHealthUI();
+    }
+
     /// <summary>Positive values heal, negative values damage.</summary>
     public void ChangeHealth(float changeAmount)
     {

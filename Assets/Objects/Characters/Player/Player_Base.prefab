@@ -3153,6 +3153,8 @@ GameObject:
   - component: {fileID: 8686160573733749877}
   - component: {fileID: 1761365883459848258}
   - component: {fileID: 2050857883901753738}
+  - component: {fileID: 1139365418197122364}
+  - component: {fileID: 8375082529819033706}
   m_Layer: 7
   m_Name: Player_Base
   m_TagString: Player
@@ -3475,3 +3477,50 @@ MonoBehaviour:
   - HitChest
   - HitHead
   minDamageToFlinch: 8
+--- !u!114 &1139365418197122364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8593542047540853332}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b81f6b4ee14a8145a6ecb4633c8604b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vigor: 10
+  endurance: 10
+  strength: 10
+  agility: 10
+  experience: 0
+  baseHealth: 100
+  healthPerVigor: 10
+  baseStamina: 100
+  staminaPerEndurance: 5
+  baseStaminaRegen: 30
+  regenPerEndurance: 1
+  damagePerStrength: 0.03
+  costReductionPerAgility: 0.015
+  maxCostReduction: 0.4
+  firstLevelCost: 100
+  levelCostGrowth: 1.12
+--- !u!114 &8375082529819033706
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8593542047540853332}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db8edfc3add57004abebe2386fe34f19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxStamina: 100
+  regenPerSecond: 30
+  regenDelay: 0.7
+  exhaustedDelay: 1.6
+  rollCost: 20
+  sprintCostPerSecond: 12
+  sprintResumeAt: 0.25
