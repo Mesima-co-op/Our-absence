@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 543aae8181b0cf043ab09f92db78ea0c, type: 3}
+  m_Name: Moveset_Sword
+  m_EditorClassIdentifier: 
+  displayName: One-handed sword
+  bladeInFist: {x: 0.8638425, y: 0.021666666, z: -0.50329584}
+  reach: 1.5
+  arc: 70
+  combo:
+  - clip: {fileID: 3625414872004886998, guid: 6ffdbbf4a5a990242aa57d396c5b0689, type: 3}
+    recovery: {fileID: 7400775424482280638, guid: 6ffdbbf4a5a990242aa57d396c5b0689, type: 3}
+    speed: 1
+    damage: 1
+    hitStart: 0.3846154
+    hitEnd: 0.7307692
+    chainFrom: 0.7907692
+    lunge: 0.35
+  - clip: {fileID: -1662512729948635066, guid: 6ffdbbf4a5a990242aa57d396c5b0689, type: 3}
+    recovery: {fileID: 7742298430783984577, guid: 6ffdbbf4a5a990242aa57d396c5b0689, type: 3}
+    speed: 1
+    damage: 1.1
+    hitStart: 0.3
+    hitEnd: 0.6
+    chainFrom: 0.66
+    lunge: 0.35
+  - clip: {fileID: 543990450412311274, guid: 6ffdbbf4a5a990242aa57d396c5b0689, type: 3}
+    recovery: {fileID: 0}
+    speed: 1
+    damage: 1.6
+    hitStart: 0.29166666
+    hitEnd: 0.35
+    chainFrom: 0.41
+    lunge: 0.5
+  inputBuffer: 0.45

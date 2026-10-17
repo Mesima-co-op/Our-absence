@@ -41,6 +41,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - InventoryItems
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8a8e3905cb01caa46a2cf4b8de8921fc
+    m_Address: Assets/Data/Items/DragonTailSword.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - InventoryItems
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9920b14400db36e4a82b887507db5425
     m_Address: Assets/Data/Items/Clothing/Ranger_Hood.asset
     m_ReadOnly: 0
@@ -73,6 +79,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e94cd0275f9f7d148b98370edf6e9585
     m_Address: Assets/Data/Items/Clothing/Ranger_Trousers.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - InventoryItems
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f2fc0579334d5004a9ed168c24c295b4
+    m_Address: Assets/Data/Items/RustyCurvedDagger.asset
     m_ReadOnly: 0
     m_SerializedLabels:
     - InventoryItems

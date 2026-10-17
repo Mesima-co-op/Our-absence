@@ -27,6 +27,8 @@ public static class FeatureTestSceneBuilder
     {
         "Assets/Objects/Items/Weapons/GameObjects/ShortSword1.prefab",
         "Assets/Objects/Items/Weapons/GameObjects/RustyShortSword.prefab",
+        "Assets/Objects/Items/Weapons/GameObjects/DragonTailSword.prefab",
+        "Assets/Objects/Items/Weapons/GameObjects/RustyCurvedDagger.prefab",
     };
 
     const string TestMission = "test_mission";
@@ -84,14 +86,14 @@ public static class FeatureTestSceneBuilder
     {
         // Weapon rack: pick up with E, equip in the menu (I), attack with the mouse
         var rack = Group(root, "Station - Weapons");
-        Sign(rack, "WEAPONS", "E pick up · I equip (LW1/RW1) · LMB/RMB draw + attack · U sheathe", new Vector3(-8, 0, 5), 0);
+        Sign(rack, "WEAPONS", "E pick up · I equip (LW1/RW1) · LMB/RMB draw, then press again for combos · U sheathe", new Vector3(-8, 0, 5), 0);
         for (int i = 0; i < WeaponPrefabs.Length; i++)
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(WeaponPrefabs[i]);
             if (prefab == null) continue;
             var weapon = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
             weapon.transform.SetParent(rack, true);
-            weapon.transform.position = new Vector3(-9.5f + i * 3f, 0.4f, 7f);
+            weapon.transform.position = new Vector3(-10.5f + i * 2f, 0.4f, 7f);
         }
 
         // Campfire hazard

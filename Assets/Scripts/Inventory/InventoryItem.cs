@@ -22,6 +22,8 @@ public class InventoryItem : ScriptableObject
     [SerializeField] private bool isDroppable;
     [Tooltip("Clothing worn on the character while this item is equipped (armour only)")]
     [SerializeField] private OutfitPiece wearable;
+    [Tooltip("How this weapon attacks (weapons only). Empty = bare-handed attacks")]
+    [SerializeField] private WeaponMoveset moveset;
 
     public override string ToString()
     {
@@ -49,5 +51,6 @@ public class InventoryItem : ScriptableObject
     public float MaxDurability => maxDurability;
     public bool IsDroppable => isDroppable;
     public OutfitPiece Wearable => wearable;
+    public WeaponMoveset Moveset => moveset;
 
 }

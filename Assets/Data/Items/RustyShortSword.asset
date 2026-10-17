@@ -22,3 +22,5 @@ MonoBehaviour:
   maxStackSize: 1
   maxDurability: 100
   isDroppable: 1
+  wearable: {fileID: 0}
+  moveset: {fileID: 11400000, guid: f166f9c82a971b94192c069543f660ac, type: 2}

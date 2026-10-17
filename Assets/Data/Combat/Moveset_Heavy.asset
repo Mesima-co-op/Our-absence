@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 543aae8181b0cf043ab09f92db78ea0c, type: 3}
+  m_Name: Moveset_Heavy
+  m_EditorClassIdentifier: 
+  displayName: Heavy blade
+  bladeInFist: {x: 0.8150452, y: -0.275, z: -0.50997674}
+  reach: 1.85
+  arc: 85
+  combo:
+  - clip: {fileID: 2622305266167319483, guid: 6ffdbbf4a5a990242aa57d396c5b0689, type: 3}
+    recovery: {fileID: 0}
+    speed: 0.95
+    damage: 1
+    hitStart: 0.47619048
+    hitEnd: 0.78571427
+    chainFrom: 0.8457143
+    lunge: 0.45
+  - clip: {fileID: -3826262439382216333, guid: 6ffdbbf4a5a990242aa57d396c5b0689, type: 3}
+    recovery: {fileID: 0}
+    speed: 0.95
+    damage: 1.1
+    hitStart: 0.42307693
+    hitEnd: 0.61538464
+    chainFrom: 0.67538464
+    lunge: 0.45
+  - clip: {fileID: -6366227678867821067, guid: 6ffdbbf4a5a990242aa57d396c5b0689, type: 3}
+    recovery: {fileID: 0}
+    speed: 0.95
+    damage: 1.25
+    hitStart: 0.5714286
+    hitEnd: 0.8214286
+    chainFrom: 0.8814286
+    lunge: 0.5
+  - clip: {fileID: 6361899418057096149, guid: 6ffdbbf4a5a990242aa57d396c5b0689, type: 3}
+    recovery: {fileID: 0}
+    speed: 0.95
+    damage: 1.8
+    hitStart: 0.20289855
+    hitEnd: 0.26086956
+    chainFrom: 0.32086957
+    lunge: 0.6
+  inputBuffer: 0.6

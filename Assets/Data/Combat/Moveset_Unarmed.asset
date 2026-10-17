@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 543aae8181b0cf043ab09f92db78ea0c, type: 3}
+  m_Name: Moveset_Unarmed
+  m_EditorClassIdentifier: 
+  displayName: Bare hands
+  bladeInFist: {x: 1, y: 0, z: 0}
+  reach: 0.95
+  arc: 70
+  combo:
+  - clip: {fileID: -7321412271681594418, guid: f7d01c06724f7d947a074e74c7df0e38, type: 3}
+    recovery: {fileID: 0}
+    speed: 1.15
+    damage: 1
+    hitStart: 0.13461539
+    hitEnd: 0.26923078
+    chainFrom: 0.3292308
+    lunge: 0.15
+  - clip: {fileID: 1705686167135224321, guid: f7d01c06724f7d947a074e74c7df0e38, type: 3}
+    recovery: {fileID: 0}
+    speed: 1.1
+    damage: 1.2
+    hitStart: 0.15
+    hitEnd: 0.3
+    chainFrom: 0.36
+    lunge: 0.2
+  - clip: {fileID: -8061687084165900903, guid: 6ffdbbf4a5a990242aa57d396c5b0689, type: 3}
+    recovery: {fileID: -7192042517891519836, guid: 6ffdbbf4a5a990242aa57d396c5b0689, type: 3}
+    speed: 1
+    damage: 1.6
+    hitStart: 0.4642857
+    hitEnd: 0.64285713
+    chainFrom: 0.70285714
+    lunge: 0.25
+  inputBuffer: 0.4

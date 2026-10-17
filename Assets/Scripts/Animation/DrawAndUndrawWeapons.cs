@@ -47,9 +47,11 @@ public class DrawAndUndrawWeapons : MonoBehaviour
     }
 
     private readonly Dictionary<string, Carried> carried = new Dictionary<string, Carried>();
+    private PlayerCombat combat;
 
     void Awake()
     {
+        combat = GetComponent<PlayerCombat>();
         undrawWeaponAction = inputSystem.actions["UndrawWeapon"];
         playerLeftAttack = inputSystem.actions["Fire"];
         playerRightAttack = inputSystem.actions["SecFire"];
@@ -120,6 +122,17 @@ public class DrawAndUndrawWeapons : MonoBehaviour
 
     private void Attack(string slot, ItemDataInstance item)
     {
+        if (combat != null && combat.enabled)
+        {
+            // Combos matched to the weapon (PlayerCombat); a weapon not yet in hand attacks bare-handed
+            carried.TryGetValue(slot, out var weapon);
+            bool held = weapon != null && weapon.inHand && weapon.instance != null;
+            combat.Attack(slot == RightSlot,
+                held ? item?._definition?.Moveset : null,
+                held ? weapon.instance.GetComponent<WeaponDamageSystem>() : null);
+            return;
+        }
+
         float type = item?._definition != null ? item._definition.ItemID : 0f;
         if (slot == RightSlot) attackAnimations.TriggerRightWeaponAttack(type);
         else attackAnimations.TriggerLeftWeaponAttack(type);
@@ -145,6 +158,9 @@ public class DrawAndUndrawWeapons : MonoBehaviour
             if (current.instance != null) Destroy(current.instance);
             carried.Remove(slot);
         }
+
+        // The hand's combo follows the weapon equipped in it (swapping clips here, not mid-attack)
+        if (combat != null) combat.SetMoveset(slot == RightSlot, equipped ? item?._definition?.Moveset : null);
 
         if (!equipped || item?._definition == null || item._definition.ObjectRef == null) return;
 
@@ -179,11 +195,9 @@ public class DrawAndUndrawWeapons : MonoBehaviour
         t.SetParent(socket, true);
         weapon.instance.SetActive(true);
         var grip = weapon.instance.GetComponent<WeaponGrip>();
-        if (grip != null && WeaponGrip.HandGripPose(animationManager.animator, right, out var pos, out var rot))
-        {
-            grip.AlignGrip(pos, rot);
-        }
-        else
+        var moveset = weapon.item?._definition?.Moveset;
+        var bladeInFist = moveset != null ? moveset.bladeInFist : WeaponGrip.StraightOut;
+        if (grip == null || !grip.AlignToHand(animationManager.animator, right, bladeInFist))
         {
             // Old fixed offsets for weapons without a grip point
             t.localRotation = right ? Quaternion.Euler(90f, 0, 90f) : Quaternion.Euler(90f, 90f, 0f);
