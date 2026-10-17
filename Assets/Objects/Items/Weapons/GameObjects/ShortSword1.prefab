@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4171423179264068735}
   - component: {fileID: 7589631908593669873}
   - component: {fileID: 6283977777518797489}
+  - component: {fileID: 2646470067852830511}
   m_Layer: 0
   m_Name: ShortSword1
   m_TagString: PickableItem
@@ -36,6 +37,7 @@ Transform:
   m_Children:
   - {fileID: 3719922389854022783}
   - {fileID: 4817928849974319506}
+  - {fileID: 2100900805326459314}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &7659087121301831559
@@ -135,6 +137,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   WeaponItem: {fileID: 7589631908593669873}
   baseDamage: 20
+--- !u!114 &2646470067852830511
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 352565146651498298}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6236e575495be454cb6169f7303789d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grip: {fileID: 2100900805326459314}
 --- !u!1 &1251532462622634610
 GameObject:
   m_ObjectHideFlags: 0
@@ -169,6 +184,37 @@ Transform:
   - {fileID: 2898844773997376350}
   m_Father: {fileID: 1539856769140630965}
   m_LocalEulerAnglesHint: {x: 73.081, y: 0, z: 0}
+--- !u!1 &2645575926953040770
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2100900805326459314}
+  m_Layer: 0
+  m_Name: Grip
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2100900805326459314
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2645575926953040770}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.5, y: 0.5, z: 0.5, w: -0.5}
+  m_LocalPosition: {x: -0.0034852684, y: -0.010461753, z: -0.00033781963}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1539856769140630965}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3162080224339788405
 GameObject:
   m_ObjectHideFlags: 0

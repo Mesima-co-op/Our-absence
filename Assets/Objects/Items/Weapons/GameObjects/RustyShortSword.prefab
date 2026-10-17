@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4761265095245262334}
   - component: {fileID: 3730527735514232976}
   - component: {fileID: 941343698844663770}
+  - component: {fileID: 7480816721714053369}
   m_Layer: 0
   m_Name: RustyShortSword
   m_TagString: PickableItem
@@ -36,6 +37,7 @@ Transform:
   m_Children:
   - {fileID: 367598175405201665}
   - {fileID: 2371485581339160428}
+  - {fileID: 3603009426573077770}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6857587399433441573
@@ -135,6 +137,50 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &7480816721714053369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 249592252839765630}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6236e575495be454cb6169f7303789d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grip: {fileID: 3603009426573077770}
+--- !u!1 &1026673435723855120
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3603009426573077770}
+  m_Layer: 0
+  m_Name: Grip
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3603009426573077770
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1026673435723855120}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0.7071068, w: 0}
+  m_LocalPosition: {x: -0.0000031314225, y: -0.0069745793, z: -0.00021439687}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3890387438689696913}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6130768663610849876
 GameObject:
   m_ObjectHideFlags: 0

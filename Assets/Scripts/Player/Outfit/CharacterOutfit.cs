@@ -116,7 +116,10 @@ public class CharacterOutfit : MonoBehaviour
         smr.sharedMesh = source.sharedMesh;
         smr.sharedMaterials = source.sharedMaterials;
         smr.shadowCastingMode = source.shadowCastingMode;
-        smr.updateWhenOffscreen = false;
+        // Recompute bounds from the animated bones every frame, like the body does. With fixed
+        // bind-pose bounds, rolls and attacks moved limbs outside the box, the clothing got culled
+        // and left see-through holes where the body underneath is hidden.
+        smr.updateWhenOffscreen = true;
 
         var bones = new Transform[source.bones.Length];
         for (int i = 0; i < bones.Length; i++)
@@ -131,8 +134,6 @@ public class CharacterOutfit : MonoBehaviour
         else if (body != null)
             smr.rootBone = body.rootBone;
 
-        // Use the body's bounds so clothing isn't culled while its bones animate
-        if (body != null) smr.localBounds = body.localBounds;
         return go;
     }
 
@@ -163,8 +164,13 @@ public class CharacterOutfit : MonoBehaviour
     // visible. The piece's "hides" regions limit which body parts it may hide at all (a hood never
     // hides the face).
 
+    // Hiding too much leaves see-through holes (cloth is open at collars, cuffs and arm holes); hiding
+    // too little lets skin poke through. So: a body triangle is removed only when all three corners are
+    // covered, and every covered vertex is also pulled a little into the body, so the triangles along
+    // the edge of the clothing slope under it instead of poking out or leaving a gap.
     const float LateralTolerance = 0.015f; // how far past a clothing edge skin still counts as covered
-    const float NormalTolerance = 0.09f;   // skin this far inside, or poking out of, the cloth is hidden
+    const float NormalTolerance = 0.06f;   // skin this far under, or poking out of, the cloth counts as covered
+    const float PullIn = 0.02f;            // how far covered skin is pulled under the clothing
 
     /// <summary>Per piece: which body vertices it covers (computed once per body mesh).</summary>
     private static readonly Dictionary<(int piece, int mesh), bool[]> coverageCache = new Dictionary<(int, int), bool[]>();
@@ -204,15 +210,24 @@ public class CharacterOutfit : MonoBehaviour
             maskedBodyMesh = Instantiate(originalBodyMesh);
             maskedBodyMesh.name = originalBodyMesh.name + " (dressed)";
         }
+
+        var vertices = originalBodyMesh.vertices;
+        var normals = originalBodyMesh.normals;
+        if (normals.Length == vertices.Length)
+            for (int v = 0; v < vertices.Length; v++)
+                if (covered[v]) vertices[v] -= normals[v] * PullIn;
+        maskedBodyMesh.vertices = vertices;
+
         for (int sub = 0; sub < originalBodyMesh.subMeshCount; sub++)
         {
             int[] tris = originalBodyMesh.GetTriangles(sub);
             var kept = new List<int>(tris.Length);
             for (int i = 0; i < tris.Length; i += 3)
             {
-                // A triangle is hidden when at least two of its corners are covered
+                // A triangle is hidden only when all its corners are covered, so the edge of the
+                // hidden area always stays under the cloth instead of leaving a jagged gap
                 int n = (covered[tris[i]] ? 1 : 0) + (covered[tris[i + 1]] ? 1 : 0) + (covered[tris[i + 2]] ? 1 : 0);
-                if (n < 2)
+                if (n < 3)
                 {
                     kept.Add(tris[i]);
                     kept.Add(tris[i + 1]);

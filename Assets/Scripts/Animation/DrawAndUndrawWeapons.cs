@@ -3,8 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// Shows the equipped weapons (LW1 / RW1) on the player.
+/// - Equipped but sheathed: the weapon rests on the back (BackSocket_L / BackSocket_R).
+/// - The first attack press plays the draw animation and moves that weapon into the hand; later presses attack.
+/// - U (UndrawWeapon) puts every weapon back on the back. Unequipping removes it.
+/// Weapons with a WeaponGrip are placed by their handle, so they sit properly in the fist.
+/// </summary>
 public class DrawAndUndrawWeapons : MonoBehaviour
 {
+    public const string LeftSlot = "LW1";
+    public const string RightSlot = "RW1";
+
     [Header("References")]
     [SerializeField] private PlayerInput inputSystem;
     [SerializeField] private AnimationManager animationManager;
@@ -13,13 +23,30 @@ public class DrawAndUndrawWeapons : MonoBehaviour
     private AttackAnimationController attackAnimations;
 
     [Header("Weapon location objects Prefabs")]
+    [Tooltip("Hand sockets: parents of the held weapons")]
     [SerializeField] private GameObject leftWeaponPrefab;
     [SerializeField] private GameObject rightWeaponPrefab;
+
+    [Header("Sheathed weapons")]
+    [Tooltip("Where a sheathed weapon's grip rests (+Z along the blade). Without one, sheathed weapons are hidden.")]
+    [SerializeField] private Transform leftBackSocket;
+    [SerializeField] private Transform rightBackSocket;
+    [Tooltip("Seconds into the draw animation when the hand takes the weapon")]
+    [SerializeField] private float drawGrabDelay = 0.3f;
 
     [Header("Inputs")]
     private InputAction undrawWeaponAction;
     private InputAction playerLeftAttack;
     private InputAction playerRightAttack;
+
+    private class Carried
+    {
+        public ItemDataInstance item;
+        public GameObject instance;
+        public bool inHand;
+    }
+
+    private readonly Dictionary<string, Carried> carried = new Dictionary<string, Carried>();
 
     void Awake()
     {
@@ -28,150 +55,191 @@ public class DrawAndUndrawWeapons : MonoBehaviour
         playerRightAttack = inputSystem.actions["SecFire"];
 
         attackAnimations = new AttackAnimationController(animationManager);
-
     }
+
+    void OnEnable() => EquipmentControl.OnEquipmentChanged += HandleEquipmentChanged;
+    void OnDisable() => EquipmentControl.OnEquipmentChanged -= HandleEquipmentChanged;
+
     void Start()
     {
         equipmentManager = FindObjectOfType<EquipmentControl>();
         globalVariables = FindObjectOfType<ObjectsState>();
+
+        // Weapons equipped before this object existed (e.g. restored from a save)
+        if (equipmentManager != null && equipmentManager.equipmentSlots != null)
+            foreach (var slot in new[] { LeftSlot, RightSlot })
+                if (equipmentManager.equipmentSlots.TryGetValue(slot, out var s) && s?.item != null)
+                    HandleEquipmentChanged(slot, s.item, true);
     }
 
     void Update()
     {
-        if (undrawWeaponAction.triggered && globalVariables.menuOpen == false)
-        {
-            var item1 = equipmentManager.equipmentSlots["LW1"]?.item;
-            var item2 = equipmentManager.equipmentSlots["RW1"]?.item;
-            UndrawWeapon(item1, item2);
-        }
+        if (globalVariables == null || globalVariables.menuOpen) return;
 
-        if (playerLeftAttack.triggered && globalVariables.menuOpen == false)
-        {
+        if (undrawWeaponAction.triggered)
+            SheatheAll();
+
+        if (playerLeftAttack.triggered)
             HandleLeftAttackAttempt();
-        }
-        else if (playerRightAttack.triggered && globalVariables.menuOpen == false)
-        {
+        else if (playerRightAttack.triggered)
             HandleRightAttackAttempt();
-        }
     }
 
-    /// <summary>
-    /// Handles the player's attempt to attack with the right weapon.
-    /// If the weapon is drawn, it triggers the attack animation.
-    /// If the weapon is not drawn, it triggers the draw weapon animation and instantiates the weapon model.
-    /// </summary>
-    public void HandleRightAttackAttempt()
+    // ─────────────────────────────────────────────────────────────────────
+    //  Attacks
+    // ─────────────────────────────────────────────────────────────────────
+
+    public void HandleRightAttackAttempt() => AttackAttempt(RightSlot);
+    public void HandleLeftAttackAttempt() => AttackAttempt(LeftSlot);
+
+    /// <summary>Draws the slot's weapon if it is on the back, otherwise attacks with that hand.</summary>
+    private void AttackAttempt(string slot)
     {
-        var item = equipmentManager.equipmentSlots["RW1"]?.item;
+        carried.TryGetValue(slot, out var weapon);
+        bool hasWeapon = weapon != null && weapon.instance != null;
+        bool drawn = animationManager.animator.GetBool("isWeaponDrawn");
 
-        if (animationManager.animator.GetBool("isWeaponDrawn") || item?._definition == null)
-            attackAnimations.TriggerRightWeaponAttack(item?._definition.ItemID ?? 0.0f);
-        else if (item?._definition != null)
+        if (hasWeapon && !weapon.inHand)
         {
-            animationManager.TriggerAnimation("drawWeapon");
-
-            var spawnedItem = Instantiate(
-                                item._definition.ObjectRef,
-                                rightWeaponPrefab.transform.position,
-                                rightWeaponPrefab.transform.rotation,
-                                rightWeaponPrefab.transform
-                            );
-            spawnedItem.transform.SetParent(rightWeaponPrefab.transform, false);
-            var heldBody = spawnedItem.GetComponentInChildren<Rigidbody>();
-            if (heldBody != null) heldBody.isKinematic = true;
-            spawnedItem.transform.localRotation = Quaternion.Euler(90f, 0, 90f);
-            spawnedItem.transform.localPosition = new Vector3(0f, 0.05f, 0f);
-            PrepareHeldWeapon(spawnedItem);
-            spawnedItem.transform.localScale = new Vector3(
-    item._definition.ObjectRef.transform.localScale.x / this.transform.localScale.x,
-    item._definition.ObjectRef.transform.localScale.y / this.transform.localScale.y,
-    item._definition.ObjectRef.transform.localScale.z / this.transform.localScale.z
-);
-            spawnedItem.tag = "Weapon";
-            spawnedItem.layer = rightWeaponPrefab.layer;
-        }
-    }
-
-    /// <summary>
-    /// Handles the player's attempt to attack with the left weapon.
-    /// If the weapon is drawn, it triggers the attack animation.
-    /// If the weapon is not drawn, it triggers the draw weapon animation and instantiates the weapon model.
-    /// </summary>
-    public void HandleLeftAttackAttempt()
-    {
-        var item = equipmentManager.equipmentSlots["LW1"]?.item;
-
-        if (animationManager.animator.GetBool("isWeaponDrawn") || item?._definition == null)
-        {
-            attackAnimations.TriggerLeftWeaponAttack(item?._definition.ItemID ?? 0.0f);
-        }
-        else if (item?._definition != null)
-        {
-            animationManager.TriggerAnimation("drawWeapon");
-
-            var spawnedItem = Instantiate(
-                item._definition.ObjectRef,
-                leftWeaponPrefab.transform.position,
-                leftWeaponPrefab.transform.rotation,
-                leftWeaponPrefab.transform
-            );
-            spawnedItem.transform.SetParent(leftWeaponPrefab.transform, false);
-            var heldBody = spawnedItem.GetComponentInChildren<Rigidbody>();
-            if (heldBody != null) heldBody.isKinematic = true;
-            spawnedItem.transform.localRotation = Quaternion.Euler(90f, 90f, 0f);
-            spawnedItem.transform.localPosition = new Vector3(0f, 0.05f, 0f);
-            PrepareHeldWeapon(spawnedItem);
-            spawnedItem.transform.localScale = new Vector3(
-    item._definition.ObjectRef.transform.localScale.x / this.transform.localScale.x,
-    item._definition.ObjectRef.transform.localScale.y / this.transform.localScale.y,
-    item._definition.ObjectRef.transform.localScale.z / this.transform.localScale.z
-);
-            spawnedItem.tag = "Weapon";
-            spawnedItem.layer = leftWeaponPrefab.layer;
-
-        }
-    }
-
-    public void UndrawWeapon(ItemDataInstance item1, ItemDataInstance item2)
-    {
-        if (animationManager.animator.GetBool("isWeaponDrawn"))
-        {
-            animationManager.SetBoolParam("isWeaponDrawn", false);
-
-            // Remove the weapon from the left hand
-            DestroyHeldWeapon(leftWeaponPrefab.transform, item1, item2);
-            DestroyHeldWeapon(rightWeaponPrefab.transform, item1, item2);
-        }
-    }
-
-    private static bool MatchesItem(Transform child, ItemDataInstance item)
-    {
-        return item?._definition != null && child.name.Contains(item._definition.name);
-    }
-
-    private void DestroyHeldWeapon(Transform hand, ItemDataInstance item1, ItemDataInstance item2)
-    {
-        foreach (Transform child in hand)
-        {
-            if (MatchesItem(child, item1) || MatchesItem(child, item2))
+            if (drawn)
             {
-                Destroy(child.gameObject);
-                Debug.Log($"Destroyed weapon: {child.name} (matched by name)");
-                break;
+                // Already in combat stance with the other hand: just take it
+                MoveToHand(slot);
+                Attack(slot, weapon.item);
             }
+            else
+            {
+                animationManager.TriggerAnimation("drawWeapon");
+                StartCoroutine(GrabAfterDelay(slot));
+            }
+            return;
         }
+
+        Attack(slot, hasWeapon ? weapon.item : null);
+    }
+
+    private void Attack(string slot, ItemDataInstance item)
+    {
+        float type = item?._definition != null ? item._definition.ItemID : 0f;
+        if (slot == RightSlot) attackAnimations.TriggerRightWeaponAttack(type);
+        else attackAnimations.TriggerLeftWeaponAttack(type);
+    }
+
+    private IEnumerator GrabAfterDelay(string slot)
+    {
+        yield return new WaitForSeconds(drawGrabDelay);
+        MoveToHand(slot);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    //  Equip / draw / sheathe
+    // ─────────────────────────────────────────────────────────────────────
+
+    private void HandleEquipmentChanged(string slot, ItemDataInstance item, bool equipped)
+    {
+        if (slot != LeftSlot && slot != RightSlot) return;
+
+        if (carried.TryGetValue(slot, out var current))
+        {
+            if (equipped && current.item == item && current.instance != null) return; // already showing it
+            if (current.instance != null) Destroy(current.instance);
+            carried.Remove(slot);
+        }
+
+        if (!equipped || item?._definition == null || item._definition.ObjectRef == null) return;
+
+        var instance = Instantiate(item._definition.ObjectRef);
+        instance.name = item._definition.ObjectRef.name;
+        PrepareCarriedWeapon(instance, item._definition.ObjectRef.transform.localScale);
+        carried[slot] = new Carried { item = item, instance = instance };
+        Sheathe(slot);
+
+        // Equipped while fighting: straight into the hand
+        if (animationManager.animator.GetBool("isWeaponDrawn")) MoveToHand(slot);
+    }
+
+    /// <summary>Puts both weapons on the back (U, or when unequipping from the menu).</summary>
+    public void SheatheAll()
+    {
+        animationManager.SetBoolParam("isWeaponDrawn", false);
+        Sheathe(LeftSlot);
+        Sheathe(RightSlot);
+    }
+
+    /// <summary>Kept for EquipmentControl: unequipping sheathes; the event then removes the weapon.</summary>
+    public void UndrawWeapon(ItemDataInstance item1, ItemDataInstance item2) => SheatheAll();
+
+    private void MoveToHand(string slot)
+    {
+        if (!carried.TryGetValue(slot, out var weapon) || weapon.instance == null) return;
+        bool right = slot == RightSlot;
+        var socket = (right ? rightWeaponPrefab : leftWeaponPrefab).transform;
+        var t = weapon.instance.transform;
+
+        t.SetParent(socket, true);
+        weapon.instance.SetActive(true);
+        var grip = weapon.instance.GetComponent<WeaponGrip>();
+        if (grip != null && WeaponGrip.HandGripPose(animationManager.animator, right, out var pos, out var rot))
+        {
+            grip.AlignGrip(pos, rot);
+        }
+        else
+        {
+            // Old fixed offsets for weapons without a grip point
+            t.localRotation = right ? Quaternion.Euler(90f, 0, 90f) : Quaternion.Euler(90f, 90f, 0f);
+            t.localPosition = new Vector3(0f, 0.05f, 0f);
+        }
+        SetHeld(weapon, true);
+    }
+
+    private void Sheathe(string slot)
+    {
+        if (!carried.TryGetValue(slot, out var weapon) || weapon.instance == null) return;
+        var back = slot == RightSlot ? rightBackSocket : leftBackSocket;
+        var t = weapon.instance.transform;
+        var grip = weapon.instance.GetComponent<WeaponGrip>();
+
+        if (back == null)
+        {
+            // Nowhere to put it: hide it until it's drawn
+            t.SetParent(transform, false);
+            weapon.instance.SetActive(false);
+        }
+        else
+        {
+            t.SetParent(back, true);
+            weapon.instance.SetActive(true);
+            if (grip != null) grip.AlignGrip(back.position, back.rotation);
+            else t.SetPositionAndRotation(back.position, back.rotation);
+        }
+        SetHeld(weapon, false);
+    }
+
+    private static void SetHeld(Carried weapon, bool inHand)
+    {
+        weapon.inHand = inHand;
+        // A sheathed weapon must not hit anything or leave a trail
+        foreach (var col in weapon.instance.GetComponentsInChildren<Collider>(true))
+            col.enabled = inHand;
+        var damage = weapon.instance.GetComponent<WeaponDamageSystem>();
+        if (damage != null) damage.Sheathed = !inHand;
     }
 
     /// <summary>
-    /// A weapon in hand must not be picked up again or collide physically,
+    /// A carried weapon must not be picked up again or collide physically,
     /// but its colliders must still report triggers so WeaponDamageSystem can hit enemies.
     /// </summary>
-    private static void PrepareHeldWeapon(GameObject weapon)
+    private void PrepareCarriedWeapon(GameObject weapon, Vector3 worldScale)
     {
         var pickUp = weapon.GetComponent<PickUpItem>();
         if (pickUp != null) pickUp.enabled = false;
-
+        foreach (var body in weapon.GetComponentsInChildren<Rigidbody>())
+            body.isKinematic = true;
         foreach (var col in weapon.GetComponentsInChildren<Collider>())
             col.isTrigger = true;
+
+        weapon.transform.localScale = worldScale; // same size as on the ground, whatever it's parented to
+        weapon.tag = "Weapon";
+        weapon.layer = rightWeaponPrefab.layer;
     }
 }

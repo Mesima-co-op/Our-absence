@@ -28,6 +28,8 @@ public class AnimationManager : MonoBehaviour
 
     private void Update()
     {
+        if (ActiveLayersIndex.Length != animator.layerCount)
+            ActiveLayersIndex = new int[animator.layerCount];
         for (int i = 0; i < animator.layerCount; i++)
         {
             if (animator.GetLayerWeight(i) == 1.0f)

@@ -39,6 +39,7 @@ public static class PlayerCharacterBuilder
             BuildMaterials();
             EditorUtility.DisplayProgressBar("Player character", "Prefab", 0.4f);
             BuildPrefab();
+            CombatSetupTool.SetUpPlayerPrefab(PrefabPath); // back sockets, grounded feet
             EditorUtility.DisplayProgressBar("Player character", "Clothing", 0.7f);
             BuildClothing();
             ItemAddressablesSync.RegisterAll();
@@ -289,14 +290,13 @@ public static class PlayerCharacterBuilder
             cc.height = 1.8f;
             cc.radius = 0.28f;
             cc.skinWidth = 0.08f;
-            cc.center = new Vector3(0f, 0.92f, 0f); // capsule bottom at the soles
+            cc.center = new Vector3(0f, 0.963f, 0f); // root sits 0.017 m above the ground, so the soles touch it (measured idle and walking)
             cc.stepOffset = 0.3f;
             cc.slopeLimit = 50f;
 
             // Hair and the dressing component
             var body = root.GetComponentsInChildren<SkinnedMeshRenderer>(true)
                 .OrderByDescending(r => r.sharedMesh != null ? r.sharedMesh.vertexCount : 0).First();
-            body.updateWhenOffscreen = true; // its bounds are shared with the clothing
             GetOrAdd<MovementFX>(root); // footstep, roll and landing dust
             var outfit = GetOrAdd<CharacterOutfit>(root);
             outfit.body = body;
@@ -305,6 +305,8 @@ public static class PlayerCharacterBuilder
             if (hairModel != null)
                 foreach (var src in hairModel.GetComponentsInChildren<SkinnedMeshRenderer>(true))
                     outfit.hair.Add(BindToSkeleton(src, root.transform, body, "Hair"));
+            // Every part (body, eyes, brows, hair) follows the animated bones, so none gets culled mid-roll
+            foreach (var part in root.GetComponentsInChildren<SkinnedMeshRenderer>(true)) part.updateWhenOffscreen = true;
 
             root.tag = paladin.tag;
             foreach (var t in root.GetComponentsInChildren<Transform>(true))

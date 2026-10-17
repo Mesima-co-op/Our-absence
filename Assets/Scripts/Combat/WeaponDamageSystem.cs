@@ -42,13 +42,16 @@ public class WeaponDamageSystem : MonoBehaviour
 
     private WeaponTrail trail;
 
+    /// <summary>True while the weapon rests on the back: it deals no damage and leaves no trail.</summary>
+    public bool Sheathed { get; set; }
+
     private void Update()
     {
         bool attacking = attackAnimations != null && attackAnimations.IsAttacking();
         // A new swing starts once the previous attack has ended
         if (attackAnimations != null && !attacking)
             hitThisSwing.Clear();
-        if (trail != null) trail.Emitting = attacking;
+        if (trail != null) trail.Emitting = attacking && !Sheathed;
     }
 
     private float Damage => baseDamage * (WeaponItem != null ? WeaponItem.damageModifier : 1f);
@@ -56,7 +59,7 @@ public class WeaponDamageSystem : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         // Only a held weapon in the middle of an attack does damage
-        if (attackAnimations == null || !attackAnimations.IsAttacking()) return;
+        if (Sheathed || attackAnimations == null || !attackAnimations.IsAttacking()) return;
 
         HealthSystem enemyHealth = other.GetComponentInParent<HealthSystem>();
         if (enemyHealth == null || enemyHealth.IsDead) return;

@@ -94,6 +94,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7633744875693064416}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &563828469602168960
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2648424121103885773}
+  m_Layer: 0
+  m_Name: BackSocket_L
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2648424121103885773
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 563828469602168960}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.6394343, y: 0.459238, z: -0.5376806, w: -0.30186737}
+  m_LocalPosition: {x: -0.13000005, y: 0.25693095, z: -0.10623793}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4431010252562193335}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &632848949602470780
 GameObject:
   m_ObjectHideFlags: 0
@@ -877,7 +908,7 @@ SkinnedMeshRenderer:
   m_SortingOrder: 0
   serializedVersion: 2
   m_Quality: 0
-  m_UpdateWhenOffscreen: 0
+  m_UpdateWhenOffscreen: 1
   m_SkinnedMotionVectors: 1
   m_Mesh: {fileID: 3359138182758997695, guid: 41b3ac270b05a4146bd4f3c37ed72e67, type: 3}
   m_Bones:
@@ -1880,7 +1911,7 @@ SkinnedMeshRenderer:
   m_SortingOrder: 0
   serializedVersion: 2
   m_Quality: 0
-  m_UpdateWhenOffscreen: 0
+  m_UpdateWhenOffscreen: 1
   m_SkinnedMotionVectors: 1
   m_Mesh: {fileID: 2391710573937639460, guid: 41b3ac270b05a4146bd4f3c37ed72e67, type: 3}
   m_Bones:
@@ -2114,7 +2145,7 @@ SkinnedMeshRenderer:
   m_SortingOrder: 0
   serializedVersion: 2
   m_Quality: 0
-  m_UpdateWhenOffscreen: 0
+  m_UpdateWhenOffscreen: 1
   m_SkinnedMotionVectors: 1
   m_Mesh: {fileID: 8081797320602856563, guid: d7c85724c4225c349b2c5d617473b83f, type: 3}
   m_Bones:
@@ -2381,6 +2412,37 @@ Transform:
   - {fileID: 3797388736348911603}
   m_Father: {fileID: 1829759486072328127}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6260934792614448143
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1182479103576832515}
+  m_Layer: 0
+  m_Name: BackSocket_R
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1182479103576832515
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6260934792614448143}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.45923805, y: -0.63943416, z: 0.30186737, w: 0.53768057}
+  m_LocalPosition: {x: 0.13000004, y: 0.25693107, z: -0.1062378}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4431010252562193335}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6318230984341599726
 GameObject:
   m_ObjectHideFlags: 0
@@ -2572,6 +2634,8 @@ Transform:
   - {fileID: 4810499078737916000}
   - {fileID: 178359923034538438}
   - {fileID: 6316592002398474434}
+  - {fileID: 1182479103576832515}
+  - {fileID: 2648424121103885773}
   m_Father: {fileID: 3397478563344399075}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7117538000965561441
@@ -3162,7 +3226,7 @@ CharacterController:
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0.92, z: 0}
+  m_Center: {x: 0, y: 0.963, z: 0}
 --- !u!114 &7876777446294331834
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3240,8 +3304,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   walkClipSpeed: 1.766271
   runClipSpeed: 4.2747984
-  combatWalkClipSpeed: 1.5851009
-  combatRunClipSpeed: 4.1712914
+  combatWalkClipSpeed: 1.766271
+  combatRunClipSpeed: 4.2747984
   lockOnClipSpeed: 2.4891279
   minPlayback: 0.6
   maxPlayback: 1.8
@@ -3333,6 +3397,9 @@ MonoBehaviour:
   globalVariables: {fileID: 0}
   leftWeaponPrefab: {fileID: 7291360748770188810}
   rightWeaponPrefab: {fileID: 6318230984341599726}
+  leftBackSocket: {fileID: 2648424121103885773}
+  rightBackSocket: {fileID: 1182479103576832515}
+  drawGrabDelay: 0.3
 --- !u!114 &129014064679976372
 MonoBehaviour:
   m_ObjectHideFlags: 0

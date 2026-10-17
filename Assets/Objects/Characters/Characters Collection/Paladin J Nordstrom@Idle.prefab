@@ -2535,6 +2535,9 @@ MonoBehaviour:
   globalVariables: {fileID: 0}
   leftWeaponPrefab: {fileID: 6068585483481855969}
   rightWeaponPrefab: {fileID: 5762657179023414060}
+  leftBackSocket: {fileID: 0}
+  rightBackSocket: {fileID: 0}
+  drawGrabDelay: 0.3
 --- !u!114 &5972208744022198534
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2568,8 +2571,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   walkClipSpeed: 2.704339
   runClipSpeed: 6.9243164
-  combatWalkClipSpeed: 2.3375201
-  combatRunClipSpeed: 6.270969
+  combatWalkClipSpeed: 2.704339
+  combatRunClipSpeed: 6.9243164
   lockOnClipSpeed: 3.786157
   minPlayback: 0.6
   maxPlayback: 1.8
