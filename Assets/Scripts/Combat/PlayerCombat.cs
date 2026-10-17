@@ -11,6 +11,9 @@ using UnityEngine;
 ///   (moving cancels it) and the hand returns to its idle.
 /// - The weapon only deals damage inside each step's hit window. Bare hands hit with the fists.
 /// - Taking damage interrupts the combo and plays a hit reaction (HitReact_layer).
+/// - Overlay layers (draw, attacks, hit reactions) only have weight while they play something. A humanoid
+///   override layer resting in an empty state at full weight freezes every bone below the hips, so the
+///   body would only turn as one block.
 /// The layers, placeholders and movesets are set up by Our Absence > Combat > Build Weapons And Movesets.
 /// </summary>
 [RequireComponent(typeof(Animator))]
@@ -20,6 +23,7 @@ public class PlayerCombat : MonoBehaviour
     public const string RightLayer = "AttackRight_layer";
     public const string LeftLayer = "AttackLeft_layer";
     public const string HitReactLayer = "HitReact_layer";
+    public const string DrawLayer = "Combat_layer";
     public const string IdleState = "Default";
 
     public static string SlotClip(bool right, bool recovery, int step) => $"{(right ? "R" : "L")}_{(recovery ? "Rec" : "Hit")}{step + 1}";
@@ -59,6 +63,7 @@ public class PlayerCombat : MonoBehaviour
         public float pressedAt = -99f;
         public bool windowOpen;
         public float lunged; // 0-1 of this step's lunge already applied
+        public bool resting = true; // the layer is in its empty idle state with no weight
         public readonly HashSet<HealthSystem> punched = new HashSet<HealthSystem>();
     }
 
@@ -70,6 +75,8 @@ public class PlayerCombat : MonoBehaviour
     private readonly Dictionary<string, AnimationClip> placeholders = new Dictionary<string, AnimationClip>();
     private Hand rightHand, leftHand;
     private int hitReactLayer = -1;
+    private int drawLayer = -1;
+    private static readonly int IdleHash = Animator.StringToHash(IdleState);
     private HealthSystem health;
     private int lastHealth;
 
@@ -87,12 +94,17 @@ public class PlayerCombat : MonoBehaviour
         rightHand =new Hand { right = true, layer = animator.GetLayerIndex(RightLayer) };
         leftHand = new Hand { right = false, layer = animator.GetLayerIndex(LeftLayer) };
         hitReactLayer = animator.GetLayerIndex(HitReactLayer);
+        drawLayer = animator.GetLayerIndex(DrawLayer);
         if (rightHand.layer < 0 || leftHand.layer < 0)
         {
             Debug.LogWarning("[Combat] The animator has no attack layers. Run Our Absence > Combat > Build Weapons And Movesets.", this);
             enabled = false;
             return;
         }
+        animator.SetLayerWeight(rightHand.layer, 0f);
+        animator.SetLayerWeight(leftHand.layer, 0f);
+        if (hitReactLayer >= 0) animator.SetLayerWeight(hitReactLayer, 0f);
+        if (drawLayer >= 0) animator.SetLayerWeight(drawLayer, 0f);
 
         overrides = new AnimatorOverrideController(animator.runtimeAnimatorController) { name = "Player Combat Overrides" };
         var list = new List<KeyValuePair<AnimationClip, AnimationClip>>();
@@ -174,7 +186,10 @@ public class PlayerCombat : MonoBehaviour
         var step = hand.set.combo[index];
         string state = StateName(false, index);
         animator.SetFloat(SpeedParam(hand.right), Mathf.Max(0.05f, step.speed));
-        animator.CrossFadeInFixedTime(state, blendIn, hand.layer, 0f);
+        // From rest the layer's weight fades in instead; never blend from the empty idle state
+        if (hand.resting) animator.Play(state, hand.layer, 0f);
+        else animator.CrossFadeInFixedTime(state, blendIn, hand.layer, 0f);
+        hand.resting = false;
         hand.stateHash = Animator.StringToHash(state);
         hand.step = index;
         hand.recovering = false;
@@ -200,7 +215,7 @@ public class PlayerCombat : MonoBehaviour
 
     private void EndCombo(Hand hand)
     {
-        if (hand.layer >= 0) animator.CrossFadeInFixedTime(IdleState, blendOut, hand.layer);
+        // The last pose holds while the layer's weight fades out (FadeLayers), then the layer rests
         hand.step = -1;
         hand.recovering = false;
         SetWindow(hand, false);
@@ -212,6 +227,49 @@ public class PlayerCombat : MonoBehaviour
     {
         Tick(rightHand);
         Tick(leftHand);
+        FadeLayers();
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    //  Layer weights
+    // ─────────────────────────────────────────────────────────────────────
+
+    private void FadeLayers()
+    {
+        FadeHand(rightHand);
+        FadeHand(leftHand);
+        FadeOverlay(hitReactLayer, 0.05f, 0.2f);
+        FadeOverlay(drawLayer, 0.1f, 0.25f);
+    }
+
+    private void FadeHand(Hand hand)
+    {
+        bool active = hand.step >= 0;
+        float w = Fade(hand.layer, active ? 1f : 0f, blendIn, blendOut);
+        if (!active && w <= 0f && !hand.resting)
+        {
+            animator.Play(IdleState, hand.layer, 0f);
+            hand.resting = true;
+        }
+    }
+
+    /// <summary>A layer driven by its own transitions: full weight unless it is in (or returning to) its empty idle.</summary>
+    private void FadeOverlay(int layer, float fadeIn, float fadeOut)
+    {
+        if (layer < 0) return;
+        bool idle = animator.IsInTransition(layer)
+            ? animator.GetNextAnimatorStateInfo(layer).shortNameHash == IdleHash
+            : animator.GetCurrentAnimatorStateInfo(layer).shortNameHash == IdleHash;
+        Fade(layer, idle ? 0f : 1f, fadeIn, fadeOut);
+    }
+
+    private float Fade(int layer, float target, float fadeIn, float fadeOut)
+    {
+        float w = animator.GetLayerWeight(layer);
+        float time = target > w ? fadeIn : fadeOut;
+        w = Mathf.MoveTowards(w, target, time > 0f ? Time.deltaTime / time : 1f);
+        animator.SetLayerWeight(layer, w);
+        return w;
     }
 
     private void Tick(Hand hand)
@@ -365,6 +423,8 @@ public class PlayerCombat : MonoBehaviour
         if (rightHand.step >= 0) EndCombo(rightHand);
         if (leftHand.step >= 0) EndCombo(leftHand);
         string state = hitReactionStates[Random.Range(0, hitReactionStates.Length)];
-        animator.CrossFadeInFixedTime(state, 0.05f, hitReactLayer, 0f);
+        // From rest the layer's weight fades in (FadeOverlay) instead of blending from the empty idle
+        if (animator.GetLayerWeight(hitReactLayer) < 0.01f) animator.Play(state, hitReactLayer, 0f);
+        else animator.CrossFadeInFixedTime(state, 0.05f, hitReactLayer, 0f);
     }
 }
